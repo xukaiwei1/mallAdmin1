@@ -7,7 +7,9 @@
 	<version>1.8</version>
 	<name>jfinal-club</name>
 	<url>http://jfinal.com/club</url>
-	
+
+
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.encoding>UTF-8</maven.compiler.encoding>
