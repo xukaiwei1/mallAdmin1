@@ -135,9 +135,14 @@ CREATE TABLE `ml_coupon` (
   `coupon_type` int(3) DEFAULT NULL COMMENT '优惠券类型',
   `coupon_amount` int(11) NOT NULL COMMENT '优惠金额',
    `name` varchar(10) DEFAULT NULL COMMENT '优惠券名字',
-   `use_amount` int(11) DEFAULT NULL COMMENT '达到多少金额可以使用',
+   `use_amount` int(11) DEFAULT NULL COMMENT '消费达到多少金额可以使用',
    `effective_days` int(11) DEFAULT NULL COMMENT '领取之后有效天数',
-   `expire_date` datetime DEFAULT NULL COMMENT '显示到期时间',
+   `coupon_number` int(5) DEFAULT NULL COMMENT '优惠券数量',
+   `per_receive_number` int(3) DEFAULT NULL COMMENT '每个人限领取优惠券数量',
+   `expire_date` datetime DEFAULT NULL COMMENT '显示到小程序的到期时间',
+   `target_type` int(2) DEFAULT NULL COMMENT '优惠对象类型',
+   `target_number` varchar (20) DEFAULT NULL COMMENT '优惠对象类型值',
+   `status` tinyint(4) DEFAULT NULL COMMENT '状态',
   `creator` varchar(255) DEFAULT NULL COMMENT '创建人',
   `created` datetime DEFAULT NULL COMMENT '创建时间',
   `modifier` varchar(255) DEFAULT NULL COMMENT '修改人',
@@ -146,7 +151,27 @@ CREATE TABLE `ml_coupon` (
   `current_mall_id` int(11) DEFAULT NULL COMMENT '当前的 mall ID',
   `remark` varchar(100) DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT '优惠券'; 
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT '优惠券';
+
+
+CREATE TABLE `ml_address` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增id',
+  `addressxy` varchar(10) DEFAULT NULL COMMENT '地址坐标信息',
+  `is_default` tinyint(4) NOT NULL COMMENT '是否是默认地址 0:是  1:否',
+   `receive_address` varchar(50) DEFAULT NULL COMMENT '详细地址',
+   `telphone` varchar(11) DEFAULT NULL COMMENT '手机号',
+   `name` varchar(10) DEFAULT NULL COMMENT '收货人姓名',
+   `zipcode` varchar(10) DEFAULT NULL COMMENT '邮编',
+   `status` tinyint(4) DEFAULT NULL COMMENT '状态',
+  `creator` varchar(255) DEFAULT NULL COMMENT '创建人',
+  `created` datetime DEFAULT NULL COMMENT '创建时间',
+  `modifier` varchar(255) DEFAULT NULL COMMENT '修改人',
+  `modified` datetime DEFAULT NULL COMMENT '修改时间',
+  `deleted` tinyint(4) DEFAULT NULL COMMENT '删除标记 0：未删除 1：已删除',
+  `current_mall_id` int(11) DEFAULT NULL COMMENT '当前的 mall ID',
+  `remark` varchar(100) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT '收货地址';
 
 
 
