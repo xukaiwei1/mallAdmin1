@@ -204,6 +204,33 @@ CREATE TABLE `ml_goods` (
 
 
 
+CREATE TABLE `ml_order` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增id',
+  `user_id` int(11) NOT NULL COMMENT '用户id',
+   `goods_id` int(11)  NOT NULL COMMENT '商品ID',
+   `amount` int(7) NOT  NULL COMMENT '支付金额',
+   `count` int (5) NOT  NULL COMMENT '个数',
+   `coupon_id` int(11) DEFAULT NULL COMMENT '优惠券ID',
+   `address_id` int(11)  DEFAULT NULL COMMENT '地址ID',
+    `order_code` varchar(10) NOT  NULL COMMENT '订单号',
+   `order_time` datetime DEFAULT NULL COMMENT '下单时间',
+   `pay_time` datetime DEFAULT NULL COMMENT '支付时间',
+   `freight` int(4) DEFAULT  NULL COMMENT '运费',
+  `paytype` tinyint(4) DEFAULT NULL COMMENT '支付方式',
+  `status` tinyint(4) DEFAULT NULL COMMENT '状态',
+  `creator` varchar(255) DEFAULT NULL COMMENT '创建人',
+  `created` datetime DEFAULT NULL COMMENT '创建时间',
+  `modifier` varchar(255) DEFAULT NULL COMMENT '修改人',
+  `modified` datetime DEFAULT NULL COMMENT '修改时间',
+  `deleted` tinyint(4) DEFAULT NULL COMMENT '删除标记 0：未删除 1：已删除',
+  `current_mall_id` int(11) DEFAULT NULL COMMENT '当前的 mall ID',
+  `remark` varchar(100) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT '订单表';
+
+
+
+
 
 
 
