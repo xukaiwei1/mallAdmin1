@@ -126,12 +126,12 @@ public class JFinalClubConfig extends JFinalConfig {
 		arp.setTransactionLevel(Connection.TRANSACTION_READ_COMMITTED);
 		_MappingKit.mapping(arp);
 		// 强制指定复合主键的次序，避免不同的开发环境生成在 _MappingKit 中的复合主键次序不相同
-		arp.setPrimaryKey("document", "mainMenu,subMenu");
+		//arp.setPrimaryKey("document", "mainMenu,subMenu");
 		me.add(arp);
 		arp.setShowSql(p.getBoolean("devMode", false));
 		
 		arp.getEngine().setToClassPathSourceFactory();
-		arp.addSqlTemplate("/sql/all_sqls.sql");
+		//arp.addSqlTemplate("/sql/all_sqls.sql");
 		
 		me.add(new EhCachePlugin());
 		me.add(new Cron4jPlugin(p));
