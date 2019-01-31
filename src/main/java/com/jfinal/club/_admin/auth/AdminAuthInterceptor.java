@@ -54,7 +54,8 @@ public class AdminAuthInterceptor implements Interceptor {
 
 		// renderError(404) 避免暴露后台管理 url，增加安全性
 		if (loginAccount == null || inv.getActionKey().equals("/admin")) {
-			inv.getController().renderError(404);
+			//inv.getController().renderError(404);
+			inv.getController().renderJson(Ret.fail("msg", "没有登录"));
 		}
 		// renderJson 提示没有操作权限，提升用户体验
 		else {

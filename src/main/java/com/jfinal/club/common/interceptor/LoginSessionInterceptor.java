@@ -55,12 +55,12 @@ public class LoginSessionInterceptor implements Interceptor {
 
         if (loginAccount != null) {
             // remind 对象用于生成提醒 tips
-            Remind remind = RemindService.me.getRemind(loginAccount.getId());
+           /* Remind remind = RemindService.me.getRemind(loginAccount.getId());
             if (remind != null) {
                 if (remind.getReferMe() > 0 || remind.getMessage() > 0 || remind.getFans() > 0) {
                     c.setAttr(remindKey, remind);
                 }
-            }
+            }*/
         }
 	}
 }

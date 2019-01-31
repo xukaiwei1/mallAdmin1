@@ -27,15 +27,19 @@ public class _MappingKit {
 		arp.addMapping("feedback_reply", "id", FeedbackReply.class);
 		arp.addMapping("message", "id", Message.class);
 		arp.addMapping("news_feed", "id", NewsFeed.class);
-		arp.addMapping("permission", "id", Permission.class);
+
 		arp.addMapping("project", "id", Project.class);
 		arp.addMapping("refer_me", "id", ReferMe.class);
 		arp.addMapping("remind", "accountId", Remind.class);
-		arp.addMapping("role", "id", Role.class);
-		arp.addMapping("session", "id", Session.class);
+
 		arp.addMapping("share", "id", Share.class);
 		arp.addMapping("share_reply", "id", ShareReply.class);
 		arp.addMapping("task_list", "id", TaskList.class);*/
+
+		arp.addMapping("account", "id", Account.class);
+		arp.addMapping("permission", "id", Permission.class);
+		arp.addMapping("role", "id", Role.class);
+		arp.addMapping("session", "id", Session.class);
 	}
 }
 

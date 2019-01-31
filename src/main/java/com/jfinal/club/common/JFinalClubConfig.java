@@ -131,7 +131,7 @@ public class JFinalClubConfig extends JFinalConfig {
 		arp.setShowSql(p.getBoolean("devMode", false));
 		
 		arp.getEngine().setToClassPathSourceFactory();
-		//arp.addSqlTemplate("/sql/all_sqls.sql");
+		arp.addSqlTemplate("/sql/all_sqls.sql");
 		
 		me.add(new EhCachePlugin());
 		me.add(new Cron4jPlugin(p));
