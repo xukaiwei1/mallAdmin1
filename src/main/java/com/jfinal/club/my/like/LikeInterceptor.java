@@ -41,11 +41,11 @@ public class LikeInterceptor implements Interceptor {
 
     private void handleUserSpaceLikeCount(BaseController c) {
         Account account = AccountService.me.getById(c.getParaToInt());
-        c.setAttr(likeNum, account.getLikeCount());
+        //c.setAttr(likeNum, account.getLikeCount());
     }
 
     private void handleMySpaceLikeCount(BaseController c) {
         Account account = AccountService.me.getById(c.getLoginAccountId());
-        c.setAttr(likeNum, account.getLikeCount());
+        //c.setAttr(likeNum, account.getLikeCount());
     }
 }

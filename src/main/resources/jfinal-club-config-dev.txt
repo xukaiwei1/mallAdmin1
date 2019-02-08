@@ -18,5 +18,13 @@ pvUpdate.cron=0 * * * *
 pvUpdate.class=com.jfinal.club.common.pageview.PageViewUpdateTask
 pvUpdate.enable=true
 
+endpoint=oss-cn-beijing.aliyuncs.com
+bucket=mallxkw
+accessKeyId=LTAIgJe4YRR3UUsq
+accessKeySecret=XKpkgkxnWMVJO5cu47jWdhfWuYVf3XXKpkgkxnWMVJO5cu47jWdhfWuYVf3X
+filedir=D:/data
+
+
+
 
 

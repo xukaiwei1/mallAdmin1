@@ -16,27 +16,21 @@ import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 public class _MappingKit {
 	
 	public static void mapping(ActiveRecordPlugin arp) {
-		/*arp.addMapping("account", "id", Account.class);
-		arp.addMapping("auth_code", "id", AuthCode.class);
-		// Composite Primary Key order: mainMenu,subMenu
-		arp.addMapping("document", "mainMenu,subMenu", Document.class);
-		arp.addMapping("download", "id", Download.class);
-		arp.addMapping("download_log", "id", DownloadLog.class);
-		arp.addMapping("favorite", "id", Favorite.class);
-		arp.addMapping("feedback", "id", Feedback.class);
-		arp.addMapping("feedback_reply", "id", FeedbackReply.class);
-		arp.addMapping("message", "id", Message.class);
-		arp.addMapping("news_feed", "id", NewsFeed.class);
-
-		arp.addMapping("project", "id", Project.class);
-		arp.addMapping("refer_me", "id", ReferMe.class);
-		arp.addMapping("remind", "accountId", Remind.class);
-
-		arp.addMapping("share", "id", Share.class);
-		arp.addMapping("share_reply", "id", ShareReply.class);
-		arp.addMapping("task_list", "id", TaskList.class);*/
-
 		arp.addMapping("account", "id", Account.class);
+		arp.addMapping("ml_address", "id", MlAddress.class);
+		arp.addMapping("ml_attribute", "id", MlAttribute.class);
+		arp.addMapping("ml_coupon", "id", MlCoupon.class);
+		arp.addMapping("ml_goods", "id", MlGoods.class);
+		arp.addMapping("ml_goods_type", "id", MlGoodsType.class);
+		arp.addMapping("ml_mall", "id", MlMall.class);
+		arp.addMapping("ml_order", "id", MlOrder.class);
+		arp.addMapping("ml_params", "id", MlParams.class);
+		arp.addMapping("ml_pay_log", "id", MlPayLog.class);
+		arp.addMapping("ml_resource", "id", MlResource.class);
+		arp.addMapping("ml_shopping_cart", "id", MlShoppingCart.class);
+		arp.addMapping("ml_user", "id", MlUser.class);
+		arp.addMapping("ml_user_coupon", "id", MlUserCoupon.class);
+		arp.addMapping("ml_userlogin_log", "id", MlUserloginLog.class);
 		arp.addMapping("permission", "id", Permission.class);
 		arp.addMapping("role", "id", Role.class);
 		arp.addMapping("session", "id", Session.class);

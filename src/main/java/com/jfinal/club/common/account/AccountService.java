@@ -127,7 +127,7 @@ public class AccountService {
             // 直接更新缓存中的 likeCount 值
             Account account = CacheKit.get(allAccountsCacheName, accountId);
             if (account != null) {
-                account.setLikeCount(account.getLikeCount() + (isAdd ? 1 : -1));
+                //account.setLikeCount(account.getLikeCount() + (isAdd ? 1 : -1));
             }
         }
     }

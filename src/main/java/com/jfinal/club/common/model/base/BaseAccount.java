@@ -25,6 +25,14 @@ public abstract class BaseAccount<M extends BaseAccount<M>> extends Model<M> imp
 		return getStr("nickName");
 	}
 
+	public void setRealName(java.lang.String realName) {
+		set("real_name", realName);
+	}
+	
+	public java.lang.String getRealName() {
+		return getStr("real_name");
+	}
+
 	public void setUserName(java.lang.String userName) {
 		set("userName", userName);
 	}
@@ -49,20 +57,68 @@ public abstract class BaseAccount<M extends BaseAccount<M>> extends Model<M> imp
 		return getStr("salt");
 	}
 
-	public void setStatus(java.lang.Integer status) {
-		set("status", status);
+	public void setActivateStatus(java.lang.Integer activateStatus) {
+		set("activate_status", activateStatus);
 	}
 	
-	public java.lang.Integer getStatus() {
-		return getInt("status");
+	public java.lang.Integer getActivateStatus() {
+		return getInt("activate_status");
 	}
 
-	public void setCreateAt(java.util.Date createAt) {
-		set("createAt", createAt);
+	public void setActivated(java.util.Date activated) {
+		set("activated", activated);
 	}
 	
-	public java.util.Date getCreateAt() {
-		return get("createAt");
+	public java.util.Date getActivated() {
+		return get("activated");
+	}
+
+	public void setPhone(java.lang.String phone) {
+		set("phone", phone);
+	}
+	
+	public java.lang.String getPhone() {
+		return getStr("phone");
+	}
+
+	public void setAddress(java.lang.String address) {
+		set("address", address);
+	}
+	
+	public java.lang.String getAddress() {
+		return getStr("address");
+	}
+
+	public void setIsAdmin(java.lang.Integer isAdmin) {
+		set("is_admin", isAdmin);
+	}
+	
+	public java.lang.Integer getIsAdmin() {
+		return getInt("is_admin");
+	}
+
+	public void setFirstLoginTime(java.util.Date firstLoginTime) {
+		set("first_login_time", firstLoginTime);
+	}
+	
+	public java.util.Date getFirstLoginTime() {
+		return get("first_login_time");
+	}
+
+	public void setLastLoginTime(java.util.Date lastLoginTime) {
+		set("last_login_time", lastLoginTime);
+	}
+	
+	public java.util.Date getLastLoginTime() {
+		return get("last_login_time");
+	}
+
+	public void setPinyinName(java.lang.String pinyinName) {
+		set("pinyin_name", pinyinName);
+	}
+	
+	public java.lang.String getPinyinName() {
+		return getStr("pinyin_name");
 	}
 
 	public void setIp(java.lang.String ip) {
@@ -81,12 +137,60 @@ public abstract class BaseAccount<M extends BaseAccount<M>> extends Model<M> imp
 		return getStr("avatar");
 	}
 
-	public void setLikeCount(java.lang.Integer likeCount) {
-		set("likeCount", likeCount);
+	public void setCreateAt(java.util.Date createAt) {
+		set("createAt", createAt);
 	}
 	
-	public java.lang.Integer getLikeCount() {
-		return getInt("likeCount");
+	public java.util.Date getCreateAt() {
+		return get("createAt");
+	}
+
+	public void setCreator(java.lang.Integer creator) {
+		set("creator", creator);
+	}
+	
+	public java.lang.Integer getCreator() {
+		return getInt("creator");
+	}
+
+	public void setModifier(java.lang.Integer modifier) {
+		set("modifier", modifier);
+	}
+	
+	public java.lang.Integer getModifier() {
+		return getInt("modifier");
+	}
+
+	public void setModified(java.util.Date modified) {
+		set("modified", modified);
+	}
+	
+	public java.util.Date getModified() {
+		return get("modified");
+	}
+
+	public void setStatus(java.lang.Integer status) {
+		set("status", status);
+	}
+	
+	public java.lang.Integer getStatus() {
+		return getInt("status");
+	}
+
+	public void setRemark(java.lang.String remark) {
+		set("remark", remark);
+	}
+	
+	public java.lang.String getRemark() {
+		return getStr("remark");
+	}
+
+	public void setCurrentMallId(java.lang.Integer currentMallId) {
+		set("current_mall_id", currentMallId);
+	}
+	
+	public java.lang.Integer getCurrentMallId() {
+		return getInt("current_mall_id");
 	}
 
 }

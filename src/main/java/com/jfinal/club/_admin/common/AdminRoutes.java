@@ -16,6 +16,7 @@ package com.jfinal.club._admin.common;
 
 import com.jfinal.club._admin.auth.AdminAuthInterceptor;
 import com.jfinal.club._admin.document.DocumentAdminController;
+import com.jfinal.club._admin.goods.GoodsAdminController;
 import com.jfinal.club._admin.permission.PermissionAdminController;
 import com.jfinal.club._admin.role.RoleAdminController;
 import com.jfinal.club._admin.feedback.FeedbackAdminController;
@@ -44,10 +45,12 @@ public class AdminRoutes extends Routes {
 		
 		add("/admin", IndexAdminController.class, "/index");
 		add("/admin/account", AccountAdminController.class, "/account");
-		add("/admin/project", ProjectAdminController.class, "/project");
+		add("/admin/goods", GoodsAdminController.class, "/project");
 		add("/admin/share", ShareAdminController.class, "/share");
 		add("/admin/feedback", FeedbackAdminController.class, "/feedback");
 		add("/admin/doc", DocumentAdminController.class, "/document");
+
+
 
 		add("/admin/role", RoleAdminController.class, "/role");
 		add("/admin/permission", PermissionAdminController.class, "/permission");

@@ -24,3 +24,9 @@
 #include("admin_auth.sql")
 #end
 
+#namespace("admin.mlgoods")
+#include("mlgoods.sql")
+#end
+
+
+
