@@ -24,6 +24,12 @@ accessKeyId=LTAIgJe4YRR3UUsq
 accessKeySecret=XKpkgkxnWMVJO5cu47jWdhfWuYVf3XXKpkgkxnWMVJO5cu47jWdhfWuYVf3X
 filedir=D:/data
 
+# 小程序配置
+appid=wx3cd08469234c3e9e
+secret=4c40b57095679a1dcb21da59a733c934
+grant_type=authorization_code
+wxlogin.url=http://api.weixin.qq.com/sns/jscode2session
+
 
 
 

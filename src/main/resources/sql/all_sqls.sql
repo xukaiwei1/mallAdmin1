@@ -24,8 +24,12 @@
 #include("admin_auth.sql")
 #end
 
-#namespace("admin.mlgoods")
+#namespace("mlgoods")
 #include("mlgoods.sql")
+#end
+
+#namespace("mall")
+#include("mall.sql")
 #end
 
 

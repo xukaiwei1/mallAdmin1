@@ -45,7 +45,7 @@ public class GoodsAdminService {
 	public Page<MlGoods> paginate(int pageNum,Integer goodsTypeId,String goodsName) {
 
 		Kv para = Kv.by("goodsTypeId", goodsTypeId).set("goodsName", goodsName);
-		SqlPara sqlPara = dao.getSqlPara("admin.mlgoods.paginate",para);
+		SqlPara sqlPara = dao.getSqlPara("mlgoods.paginate",para);
 		Page<MlGoods> mlGoodsPage = dao.paginate(pageNum, 10, sqlPara);
 		// 过滤状态
 		filterStatusList(mlGoodsPage.getList());

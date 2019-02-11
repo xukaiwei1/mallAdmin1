@@ -14,6 +14,7 @@
 
 package com.jfinal.club.common;
 
+import com.jfinal.club._app.mall.MallAppController;
 import com.jfinal.config.Routes;
 import com.jfinal.club.common.upload.UploadController;
 import com.jfinal.club.document.DocumentController;
@@ -40,7 +41,7 @@ import com.jfinal.club.user.project.UserProjectController;
 import com.jfinal.club.user.share.UserShareController;
 
 /**
- * 前台路由
+ * 小程序接口路由
  */
 public class FrontRoutes extends Routes {
 
@@ -48,31 +49,13 @@ public class FrontRoutes extends Routes {
 		setBaseViewPath("/_view");
 		
 		add("/", IndexController.class, "/index");
-		add("/share", ShareController.class);
-		add("/feedback", FeedbackController.class);
-		add("/project", ProjectController.class);
 		add("/login", LoginController.class);
-		add("/reg", RegController.class);
-		add("/common/upload", UploadController.class);
-		add("/download", DownloadController.class);
-        add("/like", LikeController.class);
-		add("/doc", DocumentController.class, "/document");
 
-		// 个人空间：由于共用了相同的拦截器，后续可将其拆分到 MyRoutes 中去，可减少拦截器配置冗余
-		add("/my", NewsFeedController.class, "/my/newsfeed");
-		add("/my/project", MyProjectController.class);
-		add("/my/share", MyShareController.class);
-		add("/my/feedback", MyFeedbackController.class);
-		add("/my/setting", MySettingController.class);
-		add("/my/friend", MyFriendController.class);
-        add("/my/message", MessageController.class);
-        add("/my/favorite", FavoriteController.class);
+		//add("/login/wxlogin", LoginController.class);
+		add("/mallApp", MallAppController.class);
 
-		// 用户空间
-		add("/user", UserNewsFeedController.class, "/user/newsfeed");
-		add("/user/share", UserShareController.class);
-		add("/user/feedback", UserFeedbackController.class);
-		add("/user/project", UserProjectController.class);
-        add("/user/friend", UserFriendController.class);
+
+
+
 	}
 }
