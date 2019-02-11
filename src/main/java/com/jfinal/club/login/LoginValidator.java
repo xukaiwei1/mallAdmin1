@@ -25,11 +25,11 @@ public class LoginValidator extends Validator {
 	protected void validate(Controller c) {
 		setShortCircuit(true);
 
-		validateRequired("userName", "userNameMsg", "邮箱不能为空");
-		validateEmail("userName", "userNameMsg", "邮箱格式不正确");
+		validateRequired("userName", "userNameMsg", "用户名不能为空");
+		validateRegex("userName", "/^1([38]\\d|5[0-35-9]|7[3678])\\d{8}$/","userNameMsg", "用户名格式不正确");
 
 		validateRequired("password", "passwordMsg", "密码不能为空");
-		validateCaptcha("captcha", "captchaMsg", "验证码不正确");
+		//validateCaptcha("captcha", "captchaMsg", "验证码不正确");
 	}
 
 	protected void handleError(Controller c) {
