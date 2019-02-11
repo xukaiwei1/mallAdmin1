@@ -14,9 +14,14 @@
 
 package com.jfinal.club.login;
 
+import com.alibaba.druid.support.json.JSONUtils;
+import com.alibaba.fastjson.JSON;
+import com.jfinal.club.common.kit.HttpClientUtil;
+import com.jfinal.club.common.model.MlUser;
 import com.jfinal.kit.HashKit;
 import com.jfinal.kit.PropKit;
 import com.jfinal.kit.StrKit;
+import com.jfinal.log.Log;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.ehcache.CacheKit;
@@ -26,7 +31,11 @@ import com.jfinal.kit.Ret;
 import com.jfinal.club.common.model.Account;
 import com.jfinal.club.common.model.AuthCode;
 import com.jfinal.club.common.model.Session;
+
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 登录业务
@@ -37,11 +46,16 @@ public class LoginService {
 
 	private Account accountDao = new Account().dao();
 
+	private MlUser mluserDao = new MlUser().dao();
+
+
 	// 存放登录用户的 cacheName
 	public static final String loginAccountCacheName = "loginAccount";
 
 	// "jfinalId" 仅用于 cookie 名称，其它地方如 cache 中全部用的 "sessionId" 来做 key
 	public static final String sessionIdName = "jfinalId";
+	public static final String TOKEN = "token";
+	private static final Log log = Log.getLog(LoginService.class);
 
 	/**
 	 * 登录成功返回 sessionId 与 loginAccount，否则返回一个 msg
@@ -93,6 +107,94 @@ public class LoginService {
 						.set(loginAccountCacheName, loginAccount)
 						.set("maxAgeInSeconds", maxAgeInSeconds);   // 用于设置 cookie 的最大存活时间
 	}
+
+
+	/**
+	 * 登录成功返回 sessionId 与 loginAccount，否则返回一个 msg
+	 */
+	public Ret wxlogin(String code,Integer mallId, String loginIp) throws UnsupportedEncodingException {
+
+		String appid=PropKit.get("appid");
+		String secret=PropKit.get("secret");
+		String grant_type=PropKit.get("grant_type");
+		String url=PropKit.get("wxlogin.url");
+		Map dataMap=new HashMap();
+		dataMap.put("appid",appid);
+		dataMap.put("secret",secret);
+		dataMap.put("grant_type",grant_type);
+		dataMap.put("js_code",code);
+		String responseJson="{\"errcode\":0,\"errmsg\":\"\",\"openid\":\"32432432\",\"session_key\":\"fwerwrwer\"}\t";
+		/*try {
+			 responseJson=HttpClientUtil.httpPostRequest(url,dataMap);
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}*/
+
+		Map returnMap= JSON.parseObject(responseJson,Map.class);
+		String openid;
+		String session_key;
+		if ((int)returnMap.get("errcode")==0){
+			log.info("调用登录接口成功");
+			openid=(String)returnMap.get("openid");
+			session_key=(String)returnMap.get("session_key");
+		}
+		else {
+			log.error("调用登录接口失败:"+returnMap.get("errmsg"));
+			return Ret.fail("msg", "登录失败:"+returnMap.get("errmsg"));
+		}
+
+
+		MlUser loginAccount = mluserDao.findFirst("select * from ml_user where openid=? limit 1", openid);
+		if (loginAccount != null) {
+			loginAccount.setLastLoginTime(new Date());
+			loginAccount.update();
+			log.info("已经存在");
+			if (loginAccount.isStatusLockId()) {
+				return Ret.fail("msg", "账号已被锁定");
+			}
+			if (loginAccount.isStatusReg()) {
+				return Ret.fail("msg", "账号未激活，请先激活账号");
+			}
+		}
+		else {
+			loginAccount=new MlUser();
+			loginAccount.setActivateStatus(1);
+			loginAccount.setActivated(new Date());
+			loginAccount.setCreated(new Date());
+			loginAccount.setCurrentMallId(mallId);
+			loginAccount.setFirstLoginTime(new Date());
+			loginAccount.setLastLoginTime(new Date());
+			loginAccount.setStatus(MlUser.STATUS_OK);
+			loginAccount.setOpenid(openid);
+			loginAccount.save();
+
+
+		}
+		String sessionId = StrKit.getRandomUUID();
+		CacheKit.put(loginAccountCacheName, sessionId, loginAccount);
+		// 登陆历史
+		createLoginLog(loginAccount.getId(), loginIp);
+		return Ret.ok(TOKEN, sessionId);
+	}
+
+	/**
+	 * 登录成功返回 sessionId 与 loginAccount，否则返回一个 msg
+	 */
+	public Ret checkToken(String token)  {
+
+		MlUser mlUser=CacheKit.get(loginAccountCacheName,token);
+		// 登陆历史
+		if (mlUser!=null){
+			return Ret.ok();
+		}
+		else {
+			return Ret.fail();
+		}
+
+	}
+
+
 
 	public Account getLoginAccountWithSessionId(String sessionId) {
 		return CacheKit.get(loginAccountCacheName, sessionId);
