@@ -7,6 +7,17 @@
 	select #(columns) from ml_resource where mall_code = #para(mlCode) order by created desc
 #end
 
+#sql("getMallAll")
+	select #(columns) from ml_mall order by created desc
+#end
+
+#sql("getMallById")
+	select #(columns) from ml_mall where id = #para(id)
+#end
+
+#sql("updateMallStatusById")
+	update ml_mall set status = #para(status),modified = new Date() ,where id=#para(id)
+#end
 
 
 
