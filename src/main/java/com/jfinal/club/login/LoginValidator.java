@@ -26,7 +26,7 @@ public class LoginValidator extends Validator {
 		setShortCircuit(true);
 
 		validateRequired("userName", "userNameMsg", "用户名不能为空");
-		validateRegex("userName", "/^1([38]\\d|5[0-35-9]|7[3678])\\d{8}$/","userNameMsg", "用户名格式不正确");
+		validateRegex("userName", "((13[0-9])|(15[^4])|(18[0,1,2,3,4,5-9])|(17[0-8])|(147))\\d{8}","userNameMsg", "用户名格式不正确");
 
 		validateRequired("password", "passwordMsg", "密码不能为空");
 		//validateCaptcha("captcha", "captchaMsg", "验证码不正确");
