@@ -48,6 +48,12 @@ public class AccountAdminController extends BaseController {
 		render("index.html");
 	}
 
+
+
+
+
+
+
 	public void edit() {
 		keepPara("p");	// 保持住分页的页号，便于在 ajax 提交后跳转到当前数据所在的页
 		Account account = srv.findById(getParaToInt("id"));
