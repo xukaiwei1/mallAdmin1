@@ -9,7 +9,7 @@ import com.jfinal.plugin.activerecord.Page;
 
 /**
  * @Auther: wangli05
- * @Date: 2019/1/31 17
+ * @Date: 2019/1/31
  * @Description:
  */
 public class MlMallController extends BaseController {
