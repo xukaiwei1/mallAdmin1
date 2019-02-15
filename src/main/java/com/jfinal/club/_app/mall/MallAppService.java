@@ -16,10 +16,7 @@ package com.jfinal.club._app.mall;
 
 import com.jfinal.club.common.Enum.MlGoodsStatusEnum;
 import com.jfinal.club.common.kit.DruidKit;
-import com.jfinal.club.common.model.Account;
-import com.jfinal.club.common.model.MlGoods;
-import com.jfinal.club.common.model.MlMall;
-import com.jfinal.club.common.model.Project;
+import com.jfinal.club.common.model.*;
 import com.jfinal.kit.Kv;
 import com.jfinal.kit.Ret;
 import com.jfinal.plugin.activerecord.Db;
@@ -36,7 +33,12 @@ import java.util.List;
 public class MallAppService {
 
 	private MlMall dao = new MlMall().dao();
+	private MlResource resourceDao = new MlResource().dao();
+
 	private   static final  String COLUMNS="id,mall_name,mall_desc,mall_code,mall_type,status";
+	private   static final  String RESOURCE_COLUMNS="id,resource_name,resource_type,resource_value,status,orders";
+	private   static final  int RESOURCE_TYPE=1;
+
 
 
 
@@ -47,11 +49,11 @@ public class MallAppService {
 		return Ret.ok("mlMall", mlMall);
 	}
 
-	public Ret getMallBanner(int mlCode) {
-		Kv para = Kv.by("columns", COLUMNS).set("mlCode", mlCode);
-		SqlPara sqlPara = dao.getSqlPara("mall.getMallBanner", para);
-		MlMall mlMall = dao.findFirst(sqlPara);
-		return Ret.ok("mlMall", mlMall);
+	public Ret getMallBanner(int mallId) {
+		Kv para = Kv.by("columns", RESOURCE_COLUMNS).set("mallId", mallId).set("resourceType",RESOURCE_TYPE);
+		SqlPara sqlPara = resourceDao.getSqlPara("mall.getMallBanner", para);
+		List<MlResource> mlResourcess = resourceDao.find(sqlPara);
+		return Ret.ok("mlBanners", mlResourcess);
 	}
 
 

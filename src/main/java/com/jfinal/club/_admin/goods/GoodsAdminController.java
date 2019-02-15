@@ -37,9 +37,8 @@ public class GoodsAdminController extends BaseController {
 		// 根据商品类型 ，商品名字 查询
 		Integer goodsTypeId=getParaToInt("goodsTypeId");
 		String goodsName=getPara("goodsName");
-		Page<MlGoods> projectPage = srv.paginate(getParaToInt("p", 1),goodsTypeId,goodsName);
-		setAttr("projectPage", projectPage);
-		render("index.html");
+		Page<MlGoods> goodsPage = srv.paginate(getParaToInt("p", 1),goodsTypeId,goodsName);
+		renderJson(Ret.ok("msg", "查询成功").put("goodsPage",goodsPage));
 	}
 
 	/**

@@ -50,8 +50,8 @@ public class MallAppController extends BaseController {
 	 * 获取 mall banner
 	 */
 	public void getMallBanner() {
-		int mlCode = getParaToInt("mlCode");
-		Ret ret = srv.getMallBanner(mlCode);
+		int mallId = getParaToInt("mallId");
+		Ret ret = srv.getMallBanner(mallId);
 		renderJson(ret);
 	}
 }
