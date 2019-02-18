@@ -19,6 +19,9 @@
 	update ml_mall set status = #para(status),modified = new Date() ,where id=#para(id)
 #end
 
+#sql("getGoodsType")
+	select #(columns) from ml_goods_type where current_mall_id = #para(mallId) order by ID asc
+#end
 
 
 
