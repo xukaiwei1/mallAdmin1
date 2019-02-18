@@ -49,12 +49,12 @@ public abstract class BaseMlGoods<M extends BaseMlGoods<M>> extends Model<M> imp
 		return getStr("goods_introduce");
 	}
 
-	public void setOrder(java.lang.Integer order) {
-		set("order", order);
+	public void setOrders(java.lang.Integer orders) {
+		set("orders", orders);
 	}
 	
-	public java.lang.Integer getOrder() {
-		return getInt("order");
+	public java.lang.Integer getOrders() {
+		return getInt("orders");
 	}
 
 	public void setPrice(java.lang.Integer price) {

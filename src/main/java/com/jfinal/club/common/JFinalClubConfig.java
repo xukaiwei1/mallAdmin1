@@ -83,6 +83,7 @@ public class JFinalClubConfig extends JFinalConfig {
 	public void configRoute(Routes me) {
 		me.add(new FrontRoutes());
 		me.add(new AdminRoutes());
+		me.add(new AppRoutes());
 	}
 	
 	/**

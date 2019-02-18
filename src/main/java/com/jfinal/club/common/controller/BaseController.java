@@ -14,6 +14,7 @@
 
 package com.jfinal.club.common.controller;
 
+import com.jfinal.club.common.model.MlUser;
 import com.jfinal.core.Controller;
 import com.jfinal.club.common.model.Account;
 import com.jfinal.club.login.LoginService;
@@ -45,6 +46,7 @@ public class BaseController extends Controller {
 	 *      中清除上次使用时的属性值
 	 */
 	private Account loginAccount = null;
+	private MlUser loginMluser = null;
 
 	protected void _clear_() {
 		this.loginAccount = null;
@@ -61,6 +63,18 @@ public class BaseController extends Controller {
 		}
 		return loginAccount;
 	}
+
+	@NotAction
+	public MlUser getLoginMluser() {
+		if (loginMluser == null) {
+			loginMluser = getAttr(LoginService.loginAccountCacheName);
+			if (loginMluser != null && ! loginMluser.isStatusOk()) {
+				throw new IllegalStateException("当前用户状态不允许登录，status = " + loginMluser.getStatus());
+			}
+		}
+		return loginMluser;
+	}
+
 
 	@NotAction
 	public boolean isLogin() {

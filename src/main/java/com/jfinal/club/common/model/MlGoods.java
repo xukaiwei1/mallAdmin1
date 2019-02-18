@@ -7,5 +7,13 @@ import com.jfinal.club.common.model.base.BaseMlGoods;
  */
 @SuppressWarnings("serial")
 public class MlGoods extends BaseMlGoods<MlGoods> {
+
+    public void setRemark(java.lang.String remark) {
+        set("remark", remark);
+    }
+
+    public java.lang.String getRemark() {
+        return getStr("remark");
+    }
 	
 }

@@ -32,5 +32,10 @@
 #include("mall.sql")
 #end
 
+#namespace("mlAddress")
+#include("mladdress.sql")
+#end
+
+
 
 

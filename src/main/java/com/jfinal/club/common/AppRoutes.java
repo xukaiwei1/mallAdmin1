@@ -14,28 +14,31 @@
 
 package com.jfinal.club.common;
 
+import com.jfinal.club._admin.common.PjaxInterceptor;
 import com.jfinal.club._admin.mlmall.MlMallController;
 import com.jfinal.club._app.mall.MallAppController;
+import com.jfinal.club.common.address.MlAddressAppController;
 import com.jfinal.club.common.goods.MlGoodsAppController;
-import com.jfinal.config.Routes;
+import com.jfinal.club.common.interceptor.TokenInterceptor;
 import com.jfinal.club.index.IndexController;
 import com.jfinal.club.login.LoginController;
+import com.jfinal.config.Routes;
 
 /**
  * 小程序接口路由
  */
-public class FrontRoutes extends Routes {
+public class AppRoutes extends Routes {
 
 	public void config() {
 		setBaseViewPath("/_view");
-		add("/", IndexController.class, "/index");
-		add("/login", LoginController.class);
+		// 添加后台管理拦截器，将拦截在此方法中注册的所有 Controller
+		addInterceptor(new TokenInterceptor());
+		addInterceptor(new PjaxInterceptor());
 
-		//add("/login/wxlogin", LoginController.class);
-		add("/mallApp", MallAppController.class);
-		add("/mlMall", MlMallController.class);
+		add("/mlAddress", MlAddressAppController.class);
 
-		add("/mlGoods", MlGoodsAppController.class);
+
+
 
 
 

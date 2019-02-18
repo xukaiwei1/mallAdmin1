@@ -12,15 +12,13 @@
  * 首次的尝试扼杀在了摇篮之中
  */
 
-package com.jfinal.club._admin.goods;
+package com.jfinal.club.common.goods;
 
 import com.jfinal.aop.Before;
 import com.jfinal.aop.Inject;
 import com.jfinal.club.common.controller.BaseController;
 import com.jfinal.club.common.model.MlGoods;
-import com.jfinal.club.common.model.Project;
 import com.jfinal.club.index.IndexService;
-import com.jfinal.club.my.project.MyProjectValidator;
 import com.jfinal.club.project.ProjectService;
 import com.jfinal.kit.Ret;
 import com.jfinal.plugin.activerecord.Page;
@@ -28,31 +26,43 @@ import com.jfinal.plugin.activerecord.Page;
 /**
  * 商品管理控制器
  */
-public class GoodsAdminController extends BaseController {
+public class MlGoodsAppController extends BaseController {
 
 	@Inject
-    GoodsAdminService srv;
-
-	public void index() {
-		// 根据商品类型 ，商品名字 查询
-		Integer goodsTypeId=getParaToInt("goodsTypeId");
-		String goodsName=getPara("goodsName");
-		Integer  currentMallId=getLoginAccount().getCurrentMallId();
-		Page<MlGoods> goodsPage = srv.paginate(getParaToInt("p", 1),goodsTypeId,goodsName,currentMallId);
-		renderJson(Ret.ok("msg", "查询成功").put("goodsPage",goodsPage));
-	}
+	MlGoodsAppService srv;
 
 	/**
-	 * 创建
+	 * 首页查询商品
 	 */
-	public void add() {
-		render("add_edit.html");
+	public void list() {
+		// 根据商品类型 ，商品名字 查询
+		Integer goodsTypeId=getParaToInt("categoryId");
+		String goodsName=getPara("nameLike");
+		Integer pageSize=getParaToInt("pageSize",10);
+		Integer mallId=getParaToInt("mallId");
+		Page<MlGoods> goodsPage = srv.paginate(getParaToInt("page", 1),goodsTypeId,goodsName,pageSize,mallId);
+		renderJson(Ret.ok("msg", "查询成功").set("goodsPage",goodsPage));
+		//renderJson(Ret.ok("msg", "查询成功").set("goodsPage"));
 	}
+
+
+	/**
+	 * 商品详情
+	 */
+	public void goodsDetail() {
+		// 根据商品类型 ，商品名字 查询
+		Integer mallId=getParaToInt("mallId");
+		Integer id=getParaToInt("id");
+		Ret ret = srv.goodsDetail(mallId,id);
+		renderJson(ret);
+	}
+
+
 
 	/**
 	 * 提交创建
 	 */
-	@Before(MlGoodsValidator.class)
+	@Before(MlGoodsAppValidator.class)
 	public void save() {
 		MlGoods mlGoods = getBean(MlGoods.class);
 		Ret ret = srv.save(getLoginAccount(), mlGoods);
@@ -71,7 +81,7 @@ public class GoodsAdminController extends BaseController {
 	/**
 	 * 提交修改
 	 */
-	@Before(MlGoodsValidator.class)
+	@Before(MlGoodsAppValidator.class)
 	public void update() {
 		MlGoods mlGoods = getBean(MlGoods.class);
 		Ret ret = srv.update(getLoginAccount(),mlGoods);

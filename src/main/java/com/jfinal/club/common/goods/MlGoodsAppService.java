@@ -12,45 +12,102 @@
  * 首次的尝试扼杀在了摇篮之中
  */
 
-package com.jfinal.club._admin.goods;
+package com.jfinal.club.common.goods;
 
+import com.alibaba.druid.util.StringUtils;
 import com.jfinal.club.common.Enum.MlGoodsStatusEnum;
 import com.jfinal.club.common.kit.DruidKit;
 import com.jfinal.club.common.model.Account;
 import com.jfinal.club.common.model.MlGoods;
 import com.jfinal.club.common.model.Project;
-import com.jfinal.club.common.safe.JsoupFilter;
-import com.jfinal.club.my.project.MyProjectService;
 import com.jfinal.kit.Kv;
 import com.jfinal.kit.Ret;
+import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Model;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.SqlPara;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * project 管理业务
  */
-public class GoodsAdminService {
+public class MlGoodsAppService {
 
 	private MlGoods dao = new MlGoods().dao();
 	private  static final int LENGTH=8;
-
+	private   static final  String COLUMNS="id,goods_code,goods_type_id,goods_name,goods_introduce,orders,price,count,goods_detail,detail_picture,banner_picture,selling_time,stopping_time,goods_attribute,logistics,creator,created,modifier,modified,status,current_mall_id,remark,count_selling";
+    private static final int  LOGISTICS=0;
 	/**
 	 * 项目分页
 	 */
-	public Page<MlGoods> paginate(int pageNum,Integer goodsTypeId,String goodsName,Integer currentMallId) {
+	public Page<MlGoods> paginate(int pageNum,Integer goodsTypeId,String goodsName,Integer pageSize,Integer mallId) {
 
-		Kv para = Kv.by("goodsTypeId", goodsTypeId).set("goodsName", goodsName).set("currentMallId", currentMallId);
-		SqlPara sqlPara = dao.getSqlPara("mlgoods.paginate",para);
-		Page<MlGoods> mlGoodsPage = dao.paginate(pageNum, 10, sqlPara);
+		Kv para = Kv.by("goodsTypeId", goodsTypeId).set("goodsName", goodsName).set("currentMallId",mallId).set("status",MlGoodsStatusEnum.Selling);
+		SqlPara sqlPara = dao.getSqlPara("mlgoods.paginateApp",para);
+		Page<MlGoods> mlGoodsPage = dao.paginate(pageNum, pageSize, sqlPara);
 		// 过滤状态
 		filterStatusList(mlGoodsPage.getList());
 		return mlGoodsPage;
 	}
+
+
+
+	public Ret goodsDetail(Integer mallId,Integer id) {
+		Kv para = Kv.by("columns", COLUMNS).set("mallId", mallId).set("id",id);
+		SqlPara sqlPara = dao.getSqlPara("mlgoods.detail", para);
+		MlGoods mlGoods = dao.findFirst(sqlPara);
+		handleGoods(mlGoods);
+		return Ret.ok("mlGoods", mlGoods);
+	}
+
+	/**
+	 * 处理商品
+	 * @param mlGoods
+	 */
+	public  void handleGoods(MlGoods mlGoods){
+		String bannerUrl=mlGoods.getBannerPicture();
+		String [] bannerUrlAry=new String[]{};
+		List dataList=new ArrayList();
+		if (!StrKit.isBlank(bannerUrl)){
+			bannerUrlAry=bannerUrl.split("#");
+		}
+		for (int i=0;i<bannerUrlAry.length;i++){
+			// 去banner第一个值作为购买时候的显示图片。
+			if (i==0){
+				mlGoods.put("pic",bannerUrlAry[i]);
+			}
+			Map data=new HashMap();
+			data.put("pic",bannerUrlAry[i]);
+			data.put("id",i);
+			dataList.add(data);
+		}
+		mlGoods.put("pics",dataList);
+
+		String detailUrl=mlGoods.getDetailPicture();
+		String [] detailUrlAry=new String[]{};
+		List detailUrlList=new ArrayList();
+		if (!StrKit.isBlank(detailUrl)){
+			detailUrlAry=detailUrl.split("#");
+		}
+		for (int i=0;i<detailUrlAry.length;i++){
+			Map data=new HashMap();
+			data.put("pic",detailUrlAry[i]);
+			data.put("id",i);
+			detailUrlList.add(data);
+		}
+		mlGoods.put("detailPics",detailUrlList);
+		if((int)mlGoods.get("logistics")==LOGISTICS){
+			mlGoods.put("logistics",true);
+
+		}
+
+
+
+
+	}
+
 
 	/**
 	 * 判断商品名称是否存在
@@ -125,7 +182,7 @@ public class GoodsAdminService {
 
 	public  int getNextOrder(int typeId){
 
-		String sql = "select order  from ml_goods where goods_type_id = ? order by order desc  limit 1";
+		String sql = "select orders  from ml_goods where goods_type_id = ? order by orders desc  limit 1";
 		Integer id = Db.queryInt(sql,typeId);
 		if (id==null){
 			return 1;
@@ -135,8 +192,12 @@ public class GoodsAdminService {
 
 	public void   filterStatusList(List<? extends Model> modelList){
 		for (Model m : modelList) {
-			int status = m.getInt("status");
-			m.set("statusStr", MlGoodsStatusEnum.enumValueOf(status).toName());
+			String bannerUrl=m.getStr("banner_picture");
+			String menuPicture="";
+			if (!StringUtils.isEmpty(bannerUrl)){
+				menuPicture=bannerUrl.split("#")[0];
+			}
+			m.put("menuPicture",menuPicture);
 		}
 	}
 
