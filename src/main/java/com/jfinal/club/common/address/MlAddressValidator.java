@@ -31,7 +31,7 @@ public class MlAddressValidator extends Validator {
 	protected void validate(Controller c) {
 		// 验证一个失败之后立即返回 不去校验后面的
 		setShortCircuit(true);
-		validateRegex("mobile", "((13[0-9])|(15[^4])|(18[0,1,2,3,4,5-9])|(17[0-8])|(147))\\d{8}","mobile", "手机号格式不正确");
+		validateRegex("telphone", "((13[0-9])|(15[^4])|(18[0,1,2,3,4,5-9])|(17[0-8])|(147))\\d{8}","errorMsg", "手机号格式不正确");
 
 	}
 

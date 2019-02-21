@@ -44,4 +44,23 @@ public class MlAddressAppService {
 		return Ret.ok("mlAddress", mlAddress);
 	}
 
+
+
+	/**
+	 * 创建默认地址
+	 */
+	public Ret addDefaultAddress(MlUser mlUser, MlAddress mlAddress) {
+
+		mlAddress.setUserId(mlUser.getId());
+		mlAddress.setIsDefault(0);
+		mlAddress.setCreator(mlUser.getId());
+		mlAddress.setCreated(new Date());
+		mlAddress.setModifier(mlUser.getId());
+		mlAddress.setModified(new Date());
+		mlAddress.setStatus(0);
+		mlAddress.setCurrentMallId(mlUser.getCurrentMallId());
+		mlAddress.save();
+		return Ret.ok("msg", "创建成功");
+	}
+
 }

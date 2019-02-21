@@ -73,6 +73,30 @@ public abstract class BaseMlAddress<M extends BaseMlAddress<M>> extends Model<M>
 		return getStr("zipcode");
 	}
 
+	public void setProvinceId(java.lang.Integer provinceId) {
+		set("provinceId", provinceId);
+	}
+	
+	public java.lang.Integer getProvinceId() {
+		return getInt("provinceId");
+	}
+
+	public void setCityId(java.lang.Integer cityId) {
+		set("cityId", cityId);
+	}
+	
+	public java.lang.Integer getCityId() {
+		return getInt("cityId");
+	}
+
+	public void setDistrictId(java.lang.Integer districtId) {
+		set("districtId", districtId);
+	}
+	
+	public java.lang.Integer getDistrictId() {
+		return getInt("districtId");
+	}
+
 	public void setCreator(java.lang.Integer creator) {
 		set("creator", creator);
 	}

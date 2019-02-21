@@ -33,18 +33,28 @@ import java.util.List;
 public class MallAppService {
 
 	private MlMall dao = new MlMall().dao();
+	private MlParams mlParamsDao=new MlParams().dao();
 	private MlResource resourceDao = new MlResource().dao();
 	private MlGoodsType goodsTypeDao = new MlGoodsType().dao();
 
 	private   static final  String COLUMNS="id,mall_name,mall_desc,mall_code,mall_type,status";
 	private   static final  String RESOURCE_COLUMNS="id,resource_name,resource_type,resource_value,status,orders";
 	private   static final  String MLGOODSTYPE_COLUMNS="id,type_name,type_code,parent_type,status,current_mall_id";
+	private   static final  String PARAM_COLUMNS="id,type,paramkey,paramvalue,creator,created,modifier,modified,status,current_mall_id,remark";
+	private   static final  String YUNFEIKEY="yunFree";
+
 	private   static final  int RESOURCE_TYPE=1;
 
 	public Ret getMallconfig(int mlCode) {
 		Kv para = Kv.by("columns", COLUMNS).set("mlCode", mlCode);
 		SqlPara sqlPara = dao.getSqlPara("mall.getMall", para);
+
 		MlMall mlMall = dao.findFirst(sqlPara);
+		// 获取运费值 目前是在数据库配置 写死的
+		Kv para1 = Kv.by("columns", PARAM_COLUMNS).set("mallId", mlMall.getId()).set("keys",YUNFEIKEY);
+		SqlPara sqlPara1 = mlParamsDao.getSqlPara("mall.getParams", para1);
+		MlParams mlParams=mlParamsDao.findFirst(sqlPara1);
+		mlMall.put("yunPrice",mlParams.getParamvalue());
 		return Ret.ok("mlMall", mlMall);
 	}
 

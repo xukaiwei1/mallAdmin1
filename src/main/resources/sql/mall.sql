@@ -25,5 +25,12 @@
 
 
 
+#sql("getParams")
+	select #(columns) from ml_params  where current_mall_id = #para(mallId) and paramkey=#para(keys)
+#end
+
+
+
+
 
 

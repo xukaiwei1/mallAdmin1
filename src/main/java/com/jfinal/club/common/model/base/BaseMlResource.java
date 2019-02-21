@@ -105,4 +105,12 @@ public abstract class BaseMlResource<M extends BaseMlResource<M>> extends Model<
 		return getStr("remark");
 	}
 
+	public void setOrders(java.lang.Integer orders) {
+		set("orders", orders);
+	}
+	
+	public java.lang.Integer getOrders() {
+		return getInt("orders");
+	}
+
 }

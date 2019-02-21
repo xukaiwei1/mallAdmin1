@@ -145,21 +145,20 @@ public abstract class BaseMlUser<M extends BaseMlUser<M>> extends Model<M> imple
 		return getInt("current_mall_id");
 	}
 
+	public void setOpenid(java.lang.String openid) {
+		set("openid", openid);
+	}
+	
+	public java.lang.String getOpenid() {
+		return getStr("openid");
+	}
+
 	public void setRemark(java.lang.String remark) {
 		set("remark", remark);
 	}
 	
 	public java.lang.String getRemark() {
 		return getStr("remark");
-	}
-
-
-	public void setOpenid(java.lang.String openid) {
-		set("openid", openid);
-	}
-
-	public java.lang.String getOpenid() {
-		return getStr("openid");
 	}
 
 }

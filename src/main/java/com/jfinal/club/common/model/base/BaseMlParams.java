@@ -25,20 +25,20 @@ public abstract class BaseMlParams<M extends BaseMlParams<M>> extends Model<M> i
 		return getStr("type");
 	}
 
-	public void setKey(java.lang.String key) {
-		set("key", key);
+	public void setParamkey(java.lang.String paramkey) {
+		set("paramkey", paramkey);
 	}
 	
-	public java.lang.String getKey() {
-		return getStr("key");
+	public java.lang.String getParamkey() {
+		return getStr("paramkey");
 	}
 
-	public void setValue(java.lang.String value) {
-		set("value", value);
+	public void setParamvalue(java.lang.String paramvalue) {
+		set("paramvalue", paramvalue);
 	}
 	
-	public java.lang.String getValue() {
-		return getStr("value");
+	public java.lang.String getParamvalue() {
+		return getStr("paramvalue");
 	}
 
 	public void setCreator(java.lang.Integer creator) {

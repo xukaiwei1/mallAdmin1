@@ -17,6 +17,7 @@ package com.jfinal.club.common.address;
 import com.jfinal.aop.Before;
 import com.jfinal.aop.Inject;
 import com.jfinal.club.common.controller.BaseController;
+import com.jfinal.club.common.model.MlAddress;
 import com.jfinal.club.common.model.MlGoods;
 import com.jfinal.club.index.IndexService;
 import com.jfinal.club.project.ProjectService;
@@ -46,9 +47,11 @@ public class MlAddressAppController extends BaseController {
 	/**
 	 * 新增默认收货地址
 	 */
+	@Before(MlAddressValidator.class)
 	public void addAddress() {
 		// 新增默认收货地址
-		Ret ret = srv.getDefaultAddress(getLoginMluser());
+		MlAddress mlAddress = getBean(MlAddress.class,"");
+		Ret ret = srv.addDefaultAddress(getLoginMluser(),mlAddress);
 		renderJson(ret);
 	}
 

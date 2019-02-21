@@ -121,6 +121,14 @@ public abstract class BaseMlGoods<M extends BaseMlGoods<M>> extends Model<M> imp
 		return getStr("goods_attribute");
 	}
 
+	public void setLogistics(java.lang.Integer logistics) {
+		set("logistics", logistics);
+	}
+	
+	public java.lang.Integer getLogistics() {
+		return getInt("logistics");
+	}
+
 	public void setCreator(java.lang.Integer creator) {
 		set("creator", creator);
 	}
@@ -175,6 +183,14 @@ public abstract class BaseMlGoods<M extends BaseMlGoods<M>> extends Model<M> imp
 	
 	public java.lang.String getRemark() {
 		return getStr("remark");
+	}
+
+	public void setCountSelling(java.lang.Integer countSelling) {
+		set("count_selling", countSelling);
+	}
+	
+	public java.lang.Integer getCountSelling() {
+		return getInt("count_selling");
 	}
 
 }
