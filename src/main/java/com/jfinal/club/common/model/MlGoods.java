@@ -15,5 +15,7 @@ public class MlGoods extends BaseMlGoods<MlGoods> {
     public java.lang.String getRemark() {
         return getStr("remark");
     }
-	
+    public void setProperties(String[] properties) {
+        set("properties", properties);
+    }
 }
