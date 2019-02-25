@@ -7,5 +7,4 @@ import com.jfinal.club.common.model.base.BaseMlOrder;
  */
 @SuppressWarnings("serial")
 public class MlOrder extends BaseMlOrder<MlOrder> {
-	
 }

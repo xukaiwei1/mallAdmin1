@@ -62,6 +62,14 @@ public class MlGoodsAppService {
 		return Ret.ok("mlGoods", mlGoods);
 	}
 
+	public MlGoods goodsDetailById(Integer mallId,Integer id) {
+		Kv para = Kv.by("columns", COLUMNS).set("mallId", mallId).set("id",id);
+		SqlPara sqlPara = dao.getSqlPara("mlgoods.detail", para);
+		MlGoods mlGoods = dao.findFirst(sqlPara);
+		handleGoods(mlGoods);
+		return mlGoods;
+	}
+
 	/**
 	 * 处理商品
 	 * @param mlGoods
@@ -108,12 +116,20 @@ public class MlGoodsAppService {
 		if (!StrKit.isBlank(goodsAttribute)){
 			properties = goodsAttribute.split("#");
 		}
+		int minPrice=mlGoods.getPrice();
 		for (int i=0;i<properties.length;i++){
 			Map data=new HashMap();
 			String[] propertiesOne = properties[i].split("=");
 			if(propertiesOne.length >0){
-				data.put("name",propertiesOne[0]);
-				data.put("amount",propertiesOne[1]);
+				data.put("id",propertiesOne[0]);
+				// 黑色=10,100#灰色=10,200#白色=10,300
+				String [] values=propertiesOne[1].split(",");
+				data.put("name",values[0]);
+				data.put("amount",values[1]);
+				if (minPrice>Integer.parseInt(values[2])){
+					minPrice=Integer.parseInt(values[2]);
+				}
+				data.put("perPrice",values[1]);
 				data.put("id",i);
 				propertiesList.add(data);
 			}else {
@@ -123,6 +139,7 @@ public class MlGoodsAppService {
 				propertiesList.add(data);
 			}
 		}
+		mlGoods.setPrice(minPrice);
 		mlGoods.put("properties",propertiesList);
 	}
 	/**

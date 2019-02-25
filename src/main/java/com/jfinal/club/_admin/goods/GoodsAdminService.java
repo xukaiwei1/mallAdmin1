@@ -136,7 +136,7 @@ public class GoodsAdminService {
 	public void   filterStatusList(List<? extends Model> modelList){
 		for (Model m : modelList) {
 			int status = m.getInt("status");
-			m.set("statusStr", MlGoodsStatusEnum.enumValueOf(status).toName());
+			m.put("statusStr", MlGoodsStatusEnum.enumValueOf(status).toName());
 		}
 	}
 

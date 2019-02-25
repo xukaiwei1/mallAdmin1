@@ -51,10 +51,10 @@ public class MallAppService {
 
 		MlMall mlMall = dao.findFirst(sqlPara);
 		// 获取运费值 目前是在数据库配置 写死的
-		Kv para1 = Kv.by("columns", PARAM_COLUMNS).set("mallId", mlMall.getId()).set("keys",YUNFEIKEY);
+		/*Kv para1 = Kv.by("columns", PARAM_COLUMNS).set("mallId", mlMall.getId()).set("keys",YUNFEIKEY);
 		SqlPara sqlPara1 = mlParamsDao.getSqlPara("mall.getParams", para1);
 		MlParams mlParams=mlParamsDao.findFirst(sqlPara1);
-		mlMall.put("yunPrice",mlParams.getParamvalue());
+		mlMall.put("yunPrice",mlParams.getParamvalue());*/
 		return Ret.ok("mlMall", mlMall);
 	}
 

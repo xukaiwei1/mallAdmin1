@@ -17,6 +17,7 @@ package com.jfinal.club.common;
 import com.jfinal.club._admin.common.PjaxInterceptor;
 import com.jfinal.club._admin.mlmall.MlMallController;
 import com.jfinal.club._app.mall.MallAppController;
+import com.jfinal.club._app.order.MlOrderAppController;
 import com.jfinal.club.common.address.MlAddressAppController;
 import com.jfinal.club.common.goods.MlGoodsAppController;
 import com.jfinal.club.common.interceptor.TokenInterceptor;
@@ -36,6 +37,7 @@ public class AppRoutes extends Routes {
 		addInterceptor(new PjaxInterceptor());
 
 		add("/mlAddress", MlAddressAppController.class);
+		add("/mlOrder", MlOrderAppController.class);
 
 
 
