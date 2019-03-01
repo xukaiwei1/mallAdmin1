@@ -31,10 +31,9 @@ public class MlAddressAppController extends BaseController {
 
 
 	/**
-	 * 得到默认收货地址
+	 * 查询默认收货地址
 	 */
 	public void getDefaultAddress() {
-		// 查询默认收货地址
 		Ret ret = srv.getDefaultAddress(getLoginMluser());
 		renderJson(ret);
 	}
@@ -45,7 +44,6 @@ public class MlAddressAppController extends BaseController {
 	 */
 	@Before(MlAddressValidator.class)
 	public void addAddress() {
-		// 新增默认收货地址
 		MlAddress mlAddress = getBean(MlAddress.class,"");
 		Ret ret = srv.addDefaultAddress(getLoginMluser(),mlAddress);
 		renderJson(ret);
@@ -56,6 +54,30 @@ public class MlAddressAppController extends BaseController {
 	 */
 	public void getAddressList() {
 		Ret ret = srv.getAddressList(getLoginMluser());
+		renderJson(ret);
+	}
+	/**
+	 * 根据id获取地址详情
+	 */
+	public void getAddressById() {
+		Ret ret = srv.getAddressById(getParaToInt("id"));
+		renderJson(ret);
+	}
+	/**
+	 * 修改收货地址
+	 */
+	@Before(MlAddressValidator.class)
+	public void updateAddress() {
+		// 新增默认收货地址
+		MlAddress mlAddress = getBean(MlAddress.class,"");
+		Ret ret = srv.updateAddress(getLoginMluser(),mlAddress);
+		renderJson(ret);
+	}
+	/**
+	 * 删除地址
+	 */
+	public void deleteAddressById() {
+		Ret ret = srv.deleteAddressById(getParaToInt("id"));
 		renderJson(ret);
 	}
 }

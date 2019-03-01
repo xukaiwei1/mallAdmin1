@@ -17,6 +17,7 @@ package com.jfinal.club.common.address;
 import com.jfinal.club.common.model.*;
 import com.jfinal.kit.Kv;
 import com.jfinal.kit.Ret;
+import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.SqlPara;
 
 import java.util.*;
@@ -38,7 +39,6 @@ public class MlAddressAppService {
 	}
 
 
-
 	/**
 	 * 创建默认地址
 	 */
@@ -57,6 +57,15 @@ public class MlAddressAppService {
 	}
 
 	/**
+	 * 更新地址
+	 */
+	public Ret updateAddress(MlUser mlUser, MlAddress mlAddress) {
+		mlAddress.setModifier(mlUser.getId());
+		mlAddress.setModified(new Date());
+		mlAddress.update();
+		return Ret.ok("msg", "修改成功");
+	}
+	/**
 	 * 获取收货地址列表
 	 * @param mlUser
 	 * @return
@@ -66,5 +75,20 @@ public class MlAddressAppService {
 		SqlPara sqlPara = dao.getSqlPara("mlAddress.list", para);
 		List<MlAddress> mlAddressList = dao.find(sqlPara);
 		return Ret.ok("mlAddressList", mlAddressList);
+	}
+	public Ret getAddressById (int id) {
+		Kv para = Kv.by("columns", COLUMNS).set("id",id);
+		SqlPara sqlPara = dao.getSqlPara("mlAddress.getAddressById", para);
+		MlAddress mlAddress = dao.findFirst(sqlPara);
+		return Ret.ok("mlAddress", mlAddress);
+	}
+
+	public Ret deleteAddressById (int id) {
+		int flag = Db.delete("DELETE FROM ml_address WHERE id=?", id);
+		if (flag == 1) {
+			return Ret.ok("msg", "project 删除成功");
+		} else {
+			return Ret.fail("msg", "project 删除失败");
+		}
 	}
 }
