@@ -66,22 +66,44 @@ public class MlOrderAppService {
 
 	    // 目前只是计算运费
 		// 获取运费值 目前是在数据库配置 写死的
-		JSONObject goodsJsonStrs= JSON.parseArray(goodsJsonStr).getJSONObject(0);
-		int goodId=(int)goodsJsonStrs.get("goodsId");
-		int number=(int)goodsJsonStrs.get("number");
-		MlGoods mlGoods=srv.goodsDetailById(mlUser.getCurrentMallId(),goodId);
-        int amountTotle=mlGoods.getPrice()*number;
+		int amountTotle=0;
+		for(int i=0;i<JSON.parseArray(goodsJsonStr).size();i++){
+
+			JSONObject goodsJsonStrs= JSON.parseArray(goodsJsonStr).getJSONObject(i);
+			int goodId=(int)goodsJsonStrs.get("goodsId");
+			int number=(int)goodsJsonStrs.get("number");
+			MlGoods mlGoods=srv.goodsDetailById(mlUser.getCurrentMallId(),goodId);
+			int propertyId=goodsJsonStrs.getInteger("propertyId");
+			int pricePer=getPricePer(propertyId,mlGoods);
+			amountTotle+=pricePer*number;
+		}
 		Kv para1 = Kv.by("columns", PARAM_COLUMNS).set("mallId", mlUser.getCurrentMallId()).set("keys",YUNFEIKEY);
 		SqlPara sqlPara1 = mlParamsDao.getSqlPara("mall.getParams", para1);
 		MlParams mlParams=mlParamsDao.findFirst(sqlPara1);
 		MlOrder mlOrder=new MlOrder();
 		mlOrder.setFreight(Integer.parseInt(mlParams.getParamvalue()));
+		mlOrder.put("freightY",DruidKit.changeF2Y(Integer.parseInt(mlParams.getParamvalue())));
 		mlOrder.put("isNeedLogistics",1);
 		mlOrder.setAmount(amountTotle);
+		mlOrder.put("amountY",DruidKit.changeF2Y(amountTotle));
+		mlOrder.put("allGoodsAndYunPrice",DruidKit.changeF2Y(amountTotle+Integer.parseInt(mlParams.getParamvalue())));
 		return Ret.ok("mlOrder", mlOrder);
 	}
 
 
+	public  int getPricePer(int propertyId,MlGoods mlGoods){
+		String goodsAttribute=mlGoods.getGoodsAttribute();
+		String [] goodsAttributeArray=goodsAttribute.split("#");
+		int pricePer=0;
+		for (int i=0;i<goodsAttributeArray.length;i++){
+			 String [] arrays=goodsAttributeArray[i].split("=");
+			 if (propertyId==Integer.parseInt(arrays[0])){
+			 	   String value=arrays[1];
+				  pricePer=Integer.parseInt(value.split(",")[2]);
+			 }
+		}
+		return pricePer;
+	}
 	/**
 	 * 下单
 	 */
@@ -89,34 +111,38 @@ public class MlOrderAppService {
 
 		// 目前只是计算运费
 		// 获取运费值 目前是在数据库配置 写死的
-		JSONObject goodsJsonStrs= JSON.parseArray(goodsJsonStr).getJSONObject(0);
-		int goodId=(int)goodsJsonStrs.get("goodsId");
-		int number=(int)goodsJsonStrs.get("number");
-		MlGoods mlGoods=srv.goodsDetailById(mlUser.getCurrentMallId(),goodId);
-		int amountTotle=mlGoods.getPrice()*number;
-		Kv para1 = Kv.by("columns", PARAM_COLUMNS).set("mallId", mlUser.getCurrentMallId()).set("keys",YUNFEIKEY);
-		SqlPara sqlPara1 = mlParamsDao.getSqlPara("mall.getParams", para1);
-		MlParams mlParams=mlParamsDao.findFirst(sqlPara1);
-		MlOrder mlOrder=new MlOrder();
-		mlOrder.setUserId(mlUser.getId());
-		mlOrder.setGoodsId(goodId);
-		mlOrder.setAmount(amountTotle);
-		mlOrder.setAddressId(addressId);
-		mlOrder.setCount(number);
-		mlOrder.setOrderCode(DruidKit.genRandomNum(8));
-		mlOrder.setCreated(new Date());
-		mlOrder.setCreator(mlUser.getId());
-		mlOrder.setCurrentMallId(mlUser.getCurrentMallId());
-		mlOrder.setModified(new Date());
-		mlOrder.setModifier(mlUser.getId());
-		mlOrder.setOrderTime(new Date());
-		mlOrder.setRemark(remark);
-		mlOrder.setStatus(MlOrderStatusEnum.ToPay.toCode());
-		mlOrder.setFreight(Integer.parseInt(mlParams.getParamvalue()));
-		mlOrder.put("isNeedLogistics",1);
-		mlOrder.setAmount(amountTotle);
-		mlOrder.save();
-		return Ret.ok("mlOrder", mlOrder);
+		for (int i=0;i<JSON.parseArray(goodsJsonStr).size();i++){
+			JSONObject goodsJsonStrs= JSON.parseArray(goodsJsonStr).getJSONObject(i);
+			int goodId=(int)goodsJsonStrs.get("goodsId");
+			int number=(int)goodsJsonStrs.get("number");
+			MlGoods mlGoods=srv.goodsDetailById(mlUser.getCurrentMallId(),goodId);
+			int perPrice=getPricePer(goodsJsonStrs.getInteger("propertyId"),mlGoods);
+			int amountTotle=perPrice*number;
+			Kv para1 = Kv.by("columns", PARAM_COLUMNS).set("mallId", mlUser.getCurrentMallId()).set("keys",YUNFEIKEY);
+			SqlPara sqlPara1 = mlParamsDao.getSqlPara("mall.getParams", para1);
+			MlParams mlParams=mlParamsDao.findFirst(sqlPara1);
+			MlOrder mlOrder=new MlOrder();
+			mlOrder.setUserId(mlUser.getId());
+			mlOrder.setGoodsId(goodId);
+			mlOrder.setAmount(amountTotle);
+			mlOrder.setAddressId(addressId);
+			mlOrder.setCount(number);
+			mlOrder.setOrderCode(DruidKit.genRandomNum(8));
+			mlOrder.setCreated(new Date());
+			mlOrder.setCreator(mlUser.getId());
+			mlOrder.setCurrentMallId(mlUser.getCurrentMallId());
+			mlOrder.setModified(new Date());
+			mlOrder.setModifier(mlUser.getId());
+			mlOrder.setOrderTime(new Date());
+			mlOrder.setRemark(remark);
+			mlOrder.setStatus(MlOrderStatusEnum.ToPay.toCode());
+			mlOrder.setFreight(Integer.parseInt(mlParams.getParamvalue()));
+			mlOrder.put("isNeedLogistics",1);
+			mlOrder.setAmount(amountTotle);
+			mlOrder.save();
+		}
+
+		return Ret.ok("mlOrder", null);
 	}
 
 	public List list(MlUser mlUser,int status){
@@ -155,6 +181,7 @@ public class MlOrderAppService {
 		for (Model m : mlOderList) {
 			int status = m.getInt("status");
 			m.put("statusStr", MlOrderStatusEnum.enumValueOf(status).toName());
+			m.put("allAmount",DruidKit.changeF2Y(m.getInt("amount")+m.getInt("freight")));
 		}
 	}
 

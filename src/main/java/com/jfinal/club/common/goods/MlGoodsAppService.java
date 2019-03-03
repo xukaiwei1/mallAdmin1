@@ -129,8 +129,7 @@ public class MlGoodsAppService {
 				if (minPrice>Integer.parseInt(values[2])){
 					minPrice=Integer.parseInt(values[2]);
 				}
-				data.put("perPrice",values[1]);
-				data.put("id",i);
+				data.put("perPrice",DruidKit.changeF2Y(Integer.parseInt(values[2])));
 				propertiesList.add(data);
 			}else {
 				data.put("name",propertiesOne[0]);
@@ -140,6 +139,7 @@ public class MlGoodsAppService {
 			}
 		}
 		mlGoods.setPrice(minPrice);
+		mlGoods.put("priceY",DruidKit.changeF2Y(mlGoods.getPrice()));
 		mlGoods.put("properties",propertiesList);
 	}
 	/**
@@ -230,6 +230,7 @@ public class MlGoodsAppService {
 			if (!StringUtils.isEmpty(bannerUrl)){
 				menuPicture=bannerUrl.split("#")[0];
 			}
+			m.put("price",DruidKit.changeF2Y(m.getInt("price")));
 			m.put("menuPicture",menuPicture);
 		}
 	}
