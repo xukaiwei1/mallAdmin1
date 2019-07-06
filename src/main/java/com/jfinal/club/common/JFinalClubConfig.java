@@ -28,6 +28,9 @@ import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.cron4j.Cron4jPlugin;
 import com.jfinal.plugin.druid.DruidPlugin;
 import com.jfinal.plugin.ehcache.EhCachePlugin;
+import com.jfinal.plugin.redis.Cache;
+import com.jfinal.plugin.redis.Redis;
+import com.jfinal.plugin.redis.RedisPlugin;
 import com.jfinal.render.JsonRender;
 import com.jfinal.server.undertow.UndertowServer;
 import com.jfinal.template.Engine;
@@ -54,6 +57,7 @@ public class JFinalClubConfig extends JFinalConfig {
 	 */
 	public static void main(String[] args) {
 		UndertowServer.start(JFinalClubConfig.class);
+
 	}
 	
 	// 先加载开发环境配置，再追加生产环境的少量配置覆盖掉开发环境配置
@@ -116,6 +120,12 @@ public class JFinalClubConfig extends JFinalConfig {
 	}
 	
 	public void configPlugin(Plugins me) {
+
+		// redis
+		RedisPlugin bbsRedis = new RedisPlugin("bbs", "39.105.229.235");
+		me.add(bbsRedis);
+
+
 		DruidPlugin druidPlugin = getDruidPlugin();
 		wallFilter = new WallFilter();			// 加强数据库安全
 		wallFilter.setDbType("mysql");

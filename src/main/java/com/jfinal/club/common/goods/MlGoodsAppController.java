@@ -53,7 +53,11 @@ public class MlGoodsAppController extends BaseController {
 		// 根据商品类型 ，商品名字 查询
 		Integer mallId=getParaToInt("mallId");
 		Integer id=getParaToInt("id");
-		Ret ret = srv.goodsDetail(mallId,id);
+		Integer propertyId=null;
+		if (getPara("propertyId")!=null){
+			propertyId=getParaToInt("propertyId");
+		}
+		Ret ret = srv.goodsDetail(mallId,id,propertyId);
 		renderJson(ret);
 	}
 

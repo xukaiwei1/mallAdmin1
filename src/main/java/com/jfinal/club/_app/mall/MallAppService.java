@@ -16,6 +16,7 @@ package com.jfinal.club._app.mall;
 
 import com.jfinal.club.common.Enum.MlGoodsStatusEnum;
 import com.jfinal.club.common.kit.DruidKit;
+import com.jfinal.club.common.kit.LockUtil;
 import com.jfinal.club.common.model.*;
 import com.jfinal.kit.Kv;
 import com.jfinal.kit.Ret;
@@ -46,6 +47,10 @@ public class MallAppService {
 	private   static final  int RESOURCE_TYPE=1;
 
 	public Ret getMallconfig(int mlCode) {
+
+		LockUtil.lock("dddddd",2);
+
+
 		Kv para = Kv.by("columns", COLUMNS).set("mlCode", mlCode);
 		SqlPara sqlPara = dao.getSqlPara("mall.getMall", para);
 

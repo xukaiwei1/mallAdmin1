@@ -14,6 +14,7 @@
 
 package com.jfinal.club.common.pageview;
 
+import com.jfinal.club._app.order.MlOrderAppService;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.cron4j.ITask;
@@ -36,7 +37,8 @@ public class PageViewUpdateTask implements ITask {
 	}
 
 	private void doUpdate() {
-		PageViewService.me.updateToDataBase();
+		//PageViewService.me.updateToDataBase();
+		MlOrderAppService.me.updateStock();
 
 		// 每次调度启动时，向 task_run_log 写日志，用于检查调度的时间是否与预期的一致，避免出现 bug 却不知道
 		Record taskRunLog = new Record().set("taskName", "PageViewUpdateTask").set("createAt", new Date());

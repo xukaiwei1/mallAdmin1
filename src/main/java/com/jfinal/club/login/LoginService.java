@@ -124,12 +124,12 @@ public class LoginService {
 		dataMap.put("grant_type",grant_type);
 		dataMap.put("js_code",code);
 		String responseJson="{\"errcode\":0,\"errmsg\":\"\",\"openid\":\"32432432\",\"session_key\":\"fwerwrwer\"}\t";
-		/*try {
-			 responseJson=HttpClientUtil.httpPostRequest(url,dataMap);
+		try {
+			 //responseJson=HttpClientUtil.httpPostRequest(url,dataMap);
 		}
 		catch (Exception e){
 			e.printStackTrace();
-		}*/
+		}
 
 		Map returnMap= JSON.parseObject(responseJson,Map.class);
 		String openid;

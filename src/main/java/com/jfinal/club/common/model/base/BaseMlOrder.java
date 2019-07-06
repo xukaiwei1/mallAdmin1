@@ -105,6 +105,14 @@ public abstract class BaseMlOrder<M extends BaseMlOrder<M>> extends Model<M> imp
 		return getInt("freight");
 	}
 
+	public void setTrackingNumber(java.lang.String trackingNumber) {
+		set("trackingNumber", trackingNumber);
+	}
+	
+	public java.lang.String getTrackingNumber() {
+		return getStr("trackingNumber");
+	}
+
 	public void setPaytype(java.lang.Integer paytype) {
 		set("paytype", paytype);
 	}

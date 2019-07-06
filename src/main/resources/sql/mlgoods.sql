@@ -36,7 +36,13 @@ and  g.status =#para(status)
 
 
 #sql("detail")
-	select #(columns) from ml_goods  where current_mall_id = #para(mallId) and id = #para(id)
+	select #(columns) from ml_goods  where 1=1
+	#if(mallId!=null&&mallId!='')
+  and  	current_mall_id = #para(mallId)
+  #end
+  #if(id!=null&&id!='')
+  and id = #para(id)
+  #end
 #end
 
 

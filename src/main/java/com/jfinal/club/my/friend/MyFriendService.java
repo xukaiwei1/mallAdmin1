@@ -24,6 +24,8 @@ import com.jfinal.club.common.model.Account;
 import com.jfinal.club.my.newsfeed.NewsFeedService;
 import com.jfinal.club.my.newsfeed.RemindService;
 import com.jfinal.club.user.friend.UserFriendService;
+import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
+
 import java.util.Date;
 import java.util.List;
 
@@ -90,7 +92,7 @@ public class MyFriendService {
             return Ret.ok();
         } catch (ActiveRecordException e) {
             // 快速多次点击关注按钮时，插入重复值时会抛异常，返回成功
-            if (e.getCause() instanceof com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException) {
+            if (e.getCause() instanceof MySQLIntegrityConstraintViolationException) {
                 return Ret.ok();
             }
             return Ret.fail("msg", "添加关注失败");

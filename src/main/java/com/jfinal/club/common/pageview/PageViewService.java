@@ -40,8 +40,8 @@ public class PageViewService {
 	public void updateToDataBase() {
 		Date date = LocalDate.now().toDate();
 		doUpdateToDataBase("project", date);
-		doUpdateToDataBase("share", date);
-		doUpdateToDataBase("feedback", date);
+		/*doUpdateToDataBase("share", date);
+		doUpdateToDataBase("feedback", date);*/
 	}
 
 	/**

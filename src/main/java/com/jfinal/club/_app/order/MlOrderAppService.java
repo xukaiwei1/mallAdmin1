@@ -23,10 +23,14 @@ import com.jfinal.aop.Inject;
 import com.jfinal.club.common.Enum.MlGoodsStatusEnum;
 import com.jfinal.club.common.Enum.MlOrderStatusEnum;
 import com.jfinal.club.common.Enum.MlPayLogStatusEnum;
+import com.jfinal.club.common.address.MlAddressAppService;
+import com.jfinal.club.common.exception.SystemException;
 import com.jfinal.club.common.goods.MlGoodsAppService;
 import com.jfinal.club.common.kit.DruidKit;
 import com.jfinal.club.common.kit.HttpClientUtil;
+import com.jfinal.club.common.kit.LockUtil;
 import com.jfinal.club.common.model.*;
+import com.jfinal.club.common.pageview.PageViewService;
 import com.jfinal.kit.Kv;
 import com.jfinal.kit.PropKit;
 import com.jfinal.kit.Ret;
@@ -48,15 +52,24 @@ import java.util.*;
  */
 public class MlOrderAppService {
 
+	public static final MlOrderAppService me = new MlOrderAppService();
 	private MlOrder dao = new MlOrder().dao();
 	private MlPayLog mlPayLogDao = new MlPayLog().dao();
 	private MlParams mlParamsDao=new MlParams().dao();
-	private   static final  String COLUMNS="id,user_id,goods_id,amount,count,goods_attribute,coupon_id,address_id,order_code,order_time,pay_time,freight,paytype,creator,created,modifier,modified,status,current_mall_id,remark";
+	private   static final  String COLUMNS="id,user_id,goods_id,amount,count,goods_attribute,coupon_id,address_id,order_code,order_time,pay_time,freight,trackingNumber,paytype,creator,created,modifier,modified,status,current_mall_id,remark";
+	private   static final  String COLUMNS_BM="mlo.id,mlo.user_id,mlo.goods_id,mlo.amount,mlo.count,mlo.goods_attribute,mlo.coupon_id,mlo.address_id,mlo.order_code,mlo.order_time,mlo.pay_time,mlo.freight,mlo.trackingNumber,mlo.paytype,mlo.creator,mlo.created,mlo.modifier,mlo.modified,mlo.status,mlo.current_mall_id,mlo.remark,mlu.weixin_name,mlg.goods_name";
 	private   static final  String PARAM_COLUMNS="id,type,paramkey,paramvalue,creator,created,modifier,modified,status,current_mall_id,remark";
 	private   static final  String PAPLOG_COLUMNS="id,user_id,order_id,amount,pay_time,creator,created,modifier,modified,status,current_mall_id,remark";
 	private   static final  String YUNFEIKEY="yunFree";
+	private   static final  int  DELESTATUS=2;
+	private static final String ML_GOODS = "ml_goods%s";
+
+
+
 	@Inject
 	MlGoodsAppService srv;
+	@Inject
+	MlAddressAppService  addressSrv;
 	private static final Log log = Log.getLog(MlOrderAppService.class);
 
 	/**
@@ -72,7 +85,7 @@ public class MlOrderAppService {
 			JSONObject goodsJsonStrs= JSON.parseArray(goodsJsonStr).getJSONObject(i);
 			int goodId=(int)goodsJsonStrs.get("goodsId");
 			int number=(int)goodsJsonStrs.get("number");
-			MlGoods mlGoods=srv.goodsDetailById(mlUser.getCurrentMallId(),goodId);
+			MlGoods mlGoods=srv.goodsDetailById(mlUser.getCurrentMallId(),goodId,null);
 			int propertyId=goodsJsonStrs.getInteger("propertyId");
 			int pricePer=getPricePer(propertyId,mlGoods);
 			amountTotle+=pricePer*number;
@@ -104,43 +117,206 @@ public class MlOrderAppService {
 		}
 		return pricePer;
 	}
+
+
+	/**
+	 * 判断库存
+	 * @param number
+	 * @param propertyId
+	 * @param mlGoods
+	 * @return
+	 */
+	public  boolean calculteStock(int number,int propertyId,MlGoods mlGoods){
+		String goodsAttribute=mlGoods.getGoodsAttribute();
+		String [] goodsAttributeArray=goodsAttribute.split("#");
+		int stock=0;
+		for (int i=0;i<goodsAttributeArray.length;i++){
+			String [] arrays=goodsAttributeArray[i].split("=");
+			if (propertyId==Integer.parseInt(arrays[0])){
+				String value=arrays[1];
+				stock=Integer.parseInt(value.split(",")[1]);
+			}
+		}
+		if (stock<number){
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * 扣减库存
+	 * @param number
+	 * @param propertyId
+	 * @param mlGoods
+	 * @return
+	 */
+	public  void DeductionStock(int number,int propertyId,MlGoods mlGoods,int caoZuo){
+		String goodsAttribute=mlGoods.getGoodsAttribute();
+		String [] goodsAttributeArray=goodsAttribute.split("#");
+		StringBuilder sb=new StringBuilder();
+		int stock=0;
+		for (int i=0;i<goodsAttributeArray.length;i++){
+
+			String [] arrays=goodsAttributeArray[i].split("=");
+			sb.append(arrays[0]).append("=");
+			if (propertyId==Integer.parseInt(arrays[0])){
+				String value=arrays[1];
+				String[] valueArray=value.split(",");
+				stock=Integer.parseInt(valueArray[1]);
+				if (caoZuo==0){
+					stock=stock-number;
+				}
+				else if (caoZuo==1){
+					stock=stock+number;
+				}
+
+				valueArray[1]=String.valueOf(stock);
+				for (int j=0;j<valueArray.length;j++){
+					sb.append(valueArray[j]).append(",");
+				}
+			}
+			else {
+				sb.append(arrays[1]);
+			}
+			sb.append("#");
+		}
+		mlGoods.setGoodsAttribute(sb.toString());
+		mlGoods.update();
+	}
+
+
+	/**
+	 * 更新库存
+	 * @return
+	 */
+	public  void updateStock(){
+
+		String key = LockUtil.getJimKey(ML_GOODS,1);
+		boolean isLock = LockUtil.lock(key, 120);
+		if (isLock) {
+			try {
+				Kv para1 = Kv.by("columns", COLUMNS).set("status",MlOrderStatusEnum.ToPay.toCode());
+				SqlPara sqlPara1 = dao.getSqlPara("mlOrder.getOrder", para1);
+				List<MlOrder> orderList=dao.find(sqlPara1);
+				for (MlOrder mlOrder:orderList){
+					if (isExpire(new Date(),mlOrder.getOrderTime(),10)){
+						String goodsAttribute =mlOrder.getGoodsAttribute();
+						String [] goodsAttributeArray=goodsAttribute.split("#");
+						for (String goodsAttributess:goodsAttributeArray){
+							// 订单商品个数
+							int number=Integer.parseInt(goodsAttributess.split(",")[2]);
+							int goodsId=Integer.parseInt(goodsAttributess.split(",")[0]);
+							int propertiesId=Integer.parseInt(goodsAttributess.split(",")[1]);
+							MlGoods mlGoods=MlGoodsAppService.me.goodsDetailByIdAllMall(goodsId);
+							DeductionStock(number,propertiesId,mlGoods,1);
+
+						}
+						mlOrder.setStatus(MlOrderStatusEnum.Expire.toCode());
+						mlOrder.update();
+					}
+
+				}
+			}
+			finally {
+				if(isLock){
+					LockUtil.unLock(key);
+				}
+			}
+
+		}
+
+	}
+
+	/**
+	 * 更新库存
+	 * @return
+	 */
+	public  boolean isExpire(Date now,Date lastDate,int minitue){
+		Calendar dateOne=Calendar.getInstance(), dateTwo=Calendar.getInstance();
+		dateOne.setTime(now);	//设置为当前系统时间
+		dateTwo.setTime(lastDate);	//设置为2015年1月15日
+		long timeOne=dateOne.getTimeInMillis();
+		long timeTwo=dateTwo.getTimeInMillis();
+		long minute=(timeOne-timeTwo)/(1000*60);//转化minute
+		if (minute>=minitue){
+			return  true;
+		}
+		 return  false;
+	}
+
+
+
 	/**
 	 * 下单
 	 */
-	public Ret create(MlUser mlUser, String goodsJsonStr,int addressId,String remark) {
+	public Ret create(MlUser mlUser, String goodsJsonStr,int addressId,String remark) throws Exception{
 
 		// 目前只是计算运费
 		// 获取运费值 目前是在数据库配置 写死的
+		int amountTotle=0;
+		int goodId=0;
+		int numberAll=0;
+		StringBuilder attrs= new StringBuilder("");
 		for (int i=0;i<JSON.parseArray(goodsJsonStr).size();i++){
 			JSONObject goodsJsonStrs= JSON.parseArray(goodsJsonStr).getJSONObject(i);
-			int goodId=(int)goodsJsonStrs.get("goodsId");
+			goodId=(int)goodsJsonStrs.get("goodsId");
 			int number=(int)goodsJsonStrs.get("number");
-			MlGoods mlGoods=srv.goodsDetailById(mlUser.getCurrentMallId(),goodId);
+			numberAll+=number;
+			MlGoods mlGoods=srv.goodsDetailById(mlUser.getCurrentMallId(),goodId,null);
 			int perPrice=getPricePer(goodsJsonStrs.getInteger("propertyId"),mlGoods);
-			int amountTotle=perPrice*number;
-			Kv para1 = Kv.by("columns", PARAM_COLUMNS).set("mallId", mlUser.getCurrentMallId()).set("keys",YUNFEIKEY);
-			SqlPara sqlPara1 = mlParamsDao.getSqlPara("mall.getParams", para1);
-			MlParams mlParams=mlParamsDao.findFirst(sqlPara1);
-			MlOrder mlOrder=new MlOrder();
-			mlOrder.setUserId(mlUser.getId());
-			mlOrder.setGoodsId(goodId);
-			mlOrder.setAmount(amountTotle);
-			mlOrder.setAddressId(addressId);
-			mlOrder.setCount(number);
-			mlOrder.setOrderCode(DruidKit.genRandomNum(8));
-			mlOrder.setCreated(new Date());
-			mlOrder.setCreator(mlUser.getId());
-			mlOrder.setCurrentMallId(mlUser.getCurrentMallId());
-			mlOrder.setModified(new Date());
-			mlOrder.setModifier(mlUser.getId());
-			mlOrder.setOrderTime(new Date());
-			mlOrder.setRemark(remark);
-			mlOrder.setStatus(MlOrderStatusEnum.ToPay.toCode());
-			mlOrder.setFreight(Integer.parseInt(mlParams.getParamvalue()));
-			mlOrder.put("isNeedLogistics",1);
-			mlOrder.setAmount(amountTotle);
-			mlOrder.save();
+			amountTotle+=perPrice*number;
+			attrs.append(String.valueOf(goodId)).append(",").append(goodsJsonStrs.getString("propertyId")).append(",")
+					.append(goodsJsonStrs.get("number")).append(",").append(String.valueOf(perPrice)).append("#");
+
+			// 增加分布式锁
+			String key = LockUtil.getJimKey(ML_GOODS,goodId);
+			boolean isLock = LockUtil.lock(key, 120);
+			if (!isLock) {
+
+				throw new SystemException("当前购买人数过多，请稍后重试");
+			}
+			// 判断库存
+			try {
+				if (!calculteStock(number,goodsJsonStrs.getInteger("propertyId"),mlGoods)){
+					throw new SystemException("商品:"+mlGoods.getGoodsName()+"库存不足,请稍后购买");
+
+				}
+				// 扣减库存
+				DeductionStock(number,goodsJsonStrs.getInteger("propertyId"),mlGoods,0);
+			}
+			finally {
+				if(isLock){
+					LockUtil.unLock(key);
+				}
+			}
+
+
 		}
+		Kv para1 = Kv.by("columns", PARAM_COLUMNS).set("mallId", mlUser.getCurrentMallId()).set("keys",YUNFEIKEY);
+		SqlPara sqlPara1 = mlParamsDao.getSqlPara("mall.getParams", para1);
+		MlParams mlParams=mlParamsDao.findFirst(sqlPara1);
+
+		MlOrder mlOrder=new MlOrder();
+		mlOrder.setUserId(mlUser.getId());
+		// goodId不准  sttr里面的才是真正的商品id
+		mlOrder.setGoodsId(goodId);
+		mlOrder.setAmount(amountTotle+Integer.parseInt(mlParams.getParamvalue()));
+		mlOrder.setAddressId(addressId);
+		mlOrder.setCount(numberAll);
+		mlOrder.setOrderCode(DruidKit.genRandomNum(8));
+		mlOrder.setCreated(new Date());
+		mlOrder.setCreator(mlUser.getId());
+		mlOrder.setCurrentMallId(mlUser.getCurrentMallId());
+		mlOrder.setModified(new Date());
+		mlOrder.setModifier(mlUser.getId());
+		mlOrder.setOrderTime(new Date());
+		mlOrder.setRemark(remark);
+		mlOrder.setStatus(MlOrderStatusEnum.ToPay.toCode());
+		mlOrder.setFreight(Integer.parseInt(mlParams.getParamvalue()));
+		mlOrder.put("isNeedLogistics",1);
+		mlOrder.setGoodsAttribute(attrs.toString());
+		mlOrder.save();
+
 
 		return Ret.ok("mlOrder", null);
 	}
@@ -151,6 +327,56 @@ public class MlOrderAppService {
 		List mlOderList=dao.find(sqlPara1);
 		filterOderList(mlOderList);
 		return mlOderList;
+	}
+
+
+	public Page listOrder(Account account,Integer status,Date startTime,Date endTime,Integer page,Integer rows){
+		Kv para1 = Kv.by("columns", COLUMNS_BM).set("currentMallId", account.getCurrentMallId()).set("status",status).set("startTime",startTime)
+				.set("endTime",endTime);
+		SqlPara sqlPara1 = dao.getSqlPara("mlOrder.listOrder", para1);
+
+		Page<MlOrder> page11=dao.paginate(page,rows,sqlPara1);
+		filterOderList(page11.getList());
+		return page11;
+	}
+
+
+
+
+
+	public Ret orderDetail(MlUser mluser,Integer id) {
+		MlOrder mlOrder=getOrderById(id);
+		String goods_attribute=mlOrder.getGoodsAttribute();
+		String [] attrArrays=goods_attribute.split("#");
+		List<MlGoods> list=new ArrayList();
+		for (int i=0;i<attrArrays.length;i++){
+			String [] sttss=attrArrays[i].split(",");
+			int goodsId =Integer.parseInt(sttss[0]);
+			MlGoods mlGoods=srv.goodsDetailById(mluser.getCurrentMallId(),goodsId,Integer.parseInt(sttss[1]));
+			mlGoods.put("propertyCount",Integer.parseInt(sttss[2]));
+            list.add(mlGoods);
+		}
+		mlOrder.put("goodsAmount",DruidKit.changeF2Y(mlOrder.getAmount()-mlOrder.getFreight()));
+		mlOrder.put("amount",DruidKit.changeF2Y(mlOrder.getAmount()));
+		mlOrder.put("freight",DruidKit.changeF2Y(mlOrder.getFreight()));
+		mlOrder.put("goods",list);
+		//目前所有商品都需要快递信息
+		mlOrder.put("logistics",true);
+		MlAddress mlAddress=addressSrv.getAddressById(mlOrder.getAddressId());
+		mlOrder.put("logistics",mlAddress);
+		return Ret.ok("mlOder", mlOrder);
+	}
+
+
+
+	public void  closeOrder(int id){
+		MlOrder mlOrder=dao.findById(id);
+		mlOrder.setStatus(DELESTATUS);
+		mlOrder.update();
+		/*Kv para1 = Kv.by("status", DELESTATUS).set("id",id);
+		SqlPara sqlPara1 = dao.getSqlPara("mlOrder.closeOrder", para1);
+		MlOrder mlOrder=dao.update(sqlPara1);
+		return mlOrder;*/
 	}
 
 	public MlOrder getOrderById(int id){
@@ -181,7 +407,7 @@ public class MlOrderAppService {
 		for (Model m : mlOderList) {
 			int status = m.getInt("status");
 			m.put("statusStr", MlOrderStatusEnum.enumValueOf(status).toName());
-			m.put("allAmount",DruidKit.changeF2Y(m.getInt("amount")+m.getInt("freight")));
+			m.put("allAmount",DruidKit.changeF2Y(m.getInt("amount")));
 		}
 	}
 
@@ -269,7 +495,7 @@ public class MlOrderAppService {
 	public  void createPaylog(MlOrder mlOrder,String remark){
 		MlPayLog mlPayLog=new MlPayLog();
 		mlPayLog.setUserId(mlOrder.getUserId());
-		mlPayLog.setAmount(mlOrder.getAmount()+mlOrder.getFreight());
+		mlPayLog.setAmount(mlOrder.getAmount());
 		mlPayLog.setOrderId(mlOrder.getId());
 		mlPayLog.setPayTime(new Date());
 		mlPayLog.setCurrentMallId(mlOrder.getCurrentMallId());

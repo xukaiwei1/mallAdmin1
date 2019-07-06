@@ -1,5 +1,9 @@
 package com.jfinal.club.common.Enum;
 
+import com.jfinal.club.common.model.EnumDomain;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeMap;
 
 /** 
@@ -102,7 +106,18 @@ public enum MlOrderStatusEnum {
         }
         return map;
     }
-
+    /**
+     * 获取枚举类型的所有<数字编码,中文描述>对
+     *
+     * @return
+     */
+    public static List<EnumDomain> toCodeNameList() {
+        List dataList=new ArrayList();
+        for (int i = 0; i < MlOrderStatusEnum.values().length; i++) {
+            dataList.add(new EnumDomain(MlOrderStatusEnum.values()[i].toCode(), MlOrderStatusEnum.values()[i].toName()));
+        }
+        return dataList;
+    }
 
     /**
      * 获取枚举类型数值编码

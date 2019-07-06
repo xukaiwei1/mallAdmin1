@@ -18,6 +18,8 @@ import com.jfinal.club.common.model.MlMall;
 import com.jfinal.kit.Kv;
 import com.jfinal.kit.Ret;
 import com.jfinal.plugin.activerecord.SqlPara;
+import com.jfinal.plugin.redis.Cache;
+import com.jfinal.plugin.redis.Redis;
 
 /**
  * project 管理业务
@@ -33,6 +35,13 @@ public class MallAppService {
 		Kv para = Kv.by("columns", COLUMNS).set("mlCode", mlCode);
 		SqlPara sqlPara = dao.getSqlPara("mall.getMall", para);
 		MlMall mlMall = dao.findFirst(sqlPara);
+
+
+		Cache bbsCache = Redis.use("bbs");
+		bbsCache.set("key", "value");
+		bbsCache.get("key");
+
+
 		return Ret.ok("mlMall", mlMall);
 	}
 

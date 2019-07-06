@@ -7,4 +7,11 @@ import com.jfinal.club.common.model.base.BaseMlOrder;
  */
 @SuppressWarnings("serial")
 public class MlOrder extends BaseMlOrder<MlOrder> {
+    public void setWeixinName(java.lang.String weixinName) {
+        set("weixin_name", weixinName);
+    }
+
+    public java.lang.String getWeixinName() {
+        return getStr("weixin_name");
+    }
 }

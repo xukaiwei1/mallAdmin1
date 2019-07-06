@@ -60,7 +60,8 @@ public class MlAddressAppController extends BaseController {
 	 * 根据id获取地址详情
 	 */
 	public void getAddressById() {
-		Ret ret = srv.getAddressById(getParaToInt("id"));
+		MlAddress mlAddress= srv.getAddressById(getParaToInt("id"));
+		Ret ret=Ret.ok("mlAddress", mlAddress);
 		renderJson(ret);
 	}
 	/**

@@ -16,15 +16,23 @@ package com.jfinal.club._app.order;
 
 import com.github.wxpay.sdk.WXPayUtil;
 import com.jfinal.aop.Inject;
+import com.jfinal.club.common.Enum.MlOrderStatusEnum;
 import com.jfinal.club.common.controller.BaseController;
+import com.jfinal.club.common.model.EnumDomain;
 import com.jfinal.club.common.model.MlOrder;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.Ret;
 import com.jfinal.log.Log;
+import com.jfinal.plugin.activerecord.Page;
+import com.jfinal.plugin.redis.Cache;
+import com.jfinal.plugin.redis.Redis;
+import com.jfinal.plugin.redis.RedisPlugin;
 
 import java.io.*;
 import java.util.*;
 
+import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 /**
  * 商品管理控制器
  */
@@ -51,7 +59,14 @@ public class MlOrderAppController extends BaseController {
 			 ret = srv.calculate(getLoginMluser(), getPara("goodsJsonStr"));
 		}
 		else {
-			 ret = srv.create(getLoginMluser(), getPara("goodsJsonStr"),addressId,remark);
+			try {
+				ret = srv.create(getLoginMluser(), getPara("goodsJsonStr"),addressId,remark);
+			}
+			catch (Exception e){
+				ret=Ret.fail("msg",e.getMessage());
+
+			}
+
 		}
 
 		renderJson(ret);
@@ -65,6 +80,32 @@ public class MlOrderAppController extends BaseController {
         int status=getParaToInt("status");
 		List<MlOrder> orderList = srv.list(getLoginMluser(),status);
 		renderJson(Ret.ok("msg", "查询成功").set("orderList",orderList));
+	}
+
+
+
+
+
+	/**
+	 * 取消订单
+	 */
+	//@Before(MlOrderAppValidator.class)
+	public void closeOrder() {
+		// 根据商品类型 ，商品名字 查询
+		Integer id=getParaToInt("id");
+		srv.closeOrder(id);
+		renderJson(Ret.ok("msg", "删除成功"));
+	}
+
+
+	/**
+	 * 订单详情
+	 */
+	public void orderDetail() {
+		// 根据商品类型 ，商品名字 查询
+		Integer id=getParaToInt("id");
+		Ret ret = srv.orderDetail(getLoginMluser(),id);
+		renderJson(ret);
 	}
 
 
@@ -110,9 +151,68 @@ public class MlOrderAppController extends BaseController {
 		out.close();
 		}
 
+	public static void main(String[] args) {
+
+		/*RedisPlugin rp = new RedisPlugin("myRedis", "39.105.229.235");
+		// 与web下唯一区别是需要这里调用一次start()方法
+		rp.start();
+
+		Redis.use().set("key", "value");
+		Redis.use().get("key");*/
+
+		String goodsAttribute="1=黑色,9,10056,#2=灰色,10,20045#3=白色,10,30067#";
+		String [] goodsAttributeArray=goodsAttribute.split("#");
+		StringBuilder sb=new StringBuilder();
+		int stock=0;
+		for (int i=0;i<goodsAttributeArray.length;i++){
+
+			String [] arrays=goodsAttributeArray[i].split("=");
+			sb.append(arrays[0]).append("=");
+			if (1==Integer.parseInt(arrays[0])){
+				String value=arrays[1];
+				String[] valueArray=value.split(",");
+				stock=Integer.parseInt(valueArray[1]);
+				stock=stock-1;
+				valueArray[1]=String.valueOf(stock);
+				for (int j=0;j<valueArray.length;j++){
+					sb.append(valueArray[j]).append(",");
+				}
+			}
+			else {
+				sb.append(arrays[1]);
+			}
+			sb.append("#");
+		}
+		System.out.println(sb.toString());
+	}
 
 
 
+
+	/**
+	 * 查询订单
+	 */
+	//@Before(MlOrderAppValidator.class)
+	public void init() {
+		List<EnumDomain> orderStatus=MlOrderStatusEnum.toCodeNameList();
+		renderJson(Ret.ok("msg", "查询成功").set("orderStatus",orderStatus));
+	}
+
+
+	/** 管理员查询
+	 *   订单
+	 */
+	//@Before(MlOrderAppValidator.class)
+	public void listOrder() {
+		Integer status=getParaToInt("status");
+		Date startTime=getParaToDate("startTime");
+		Date endTime=getParaToDate("endTime");
+		Integer page=getParaToInt("page",1);
+		Integer rows=getParaToInt("rows");
+
+		Page orderList = srv.listOrder(getLoginAccount(),status,startTime,endTime,page,rows);
+		renderJson(Ret.ok("msg", "查询成功").set("orderList",orderList));
+	}
 
 
 

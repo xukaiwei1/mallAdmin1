@@ -76,11 +76,11 @@ public class MlAddressAppService {
 		List<MlAddress> mlAddressList = dao.find(sqlPara);
 		return Ret.ok("mlAddressList", mlAddressList);
 	}
-	public Ret getAddressById (int id) {
+	public MlAddress getAddressById (int id) {
 		Kv para = Kv.by("columns", COLUMNS).set("id",id);
 		SqlPara sqlPara = dao.getSqlPara("mlAddress.getAddressById", para);
 		MlAddress mlAddress = dao.findFirst(sqlPara);
-		return Ret.ok("mlAddress", mlAddress);
+		return  mlAddress;
 	}
 
 	public Ret deleteAddressById (int id) {

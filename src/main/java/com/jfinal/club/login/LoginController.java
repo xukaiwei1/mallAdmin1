@@ -85,7 +85,7 @@ public class LoginController extends Controller {
 	 * 退出登录
 	 */
 	@Clear
-	@ActionKey("/logout")
+	//@ActionKey("/logout")
 	public void logout() {
 		srv.logout(getCookie(LoginService.sessionIdName));
 		removeCookie(LoginService.sessionIdName);

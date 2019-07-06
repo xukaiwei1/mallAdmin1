@@ -16,6 +16,7 @@ package com.jfinal.club.common;
 
 import com.jfinal.club._admin.mlmall.MlMallController;
 import com.jfinal.club._app.mall.MallAppController;
+import com.jfinal.club._app.order.MlOrderAppController;
 import com.jfinal.club.common.goods.MlGoodsAppController;
 import com.jfinal.config.Routes;
 import com.jfinal.club.index.IndexController;
@@ -36,6 +37,14 @@ public class FrontRoutes extends Routes {
 		add("/mlMall", MlMallController.class);
 
 		add("/mlGoods", MlGoodsAppController.class);
+
+
+
+		// 管理端的路由
+		add("/sell/login", LoginController.class);
+		add("/sell/mlGoods", MlGoodsAppController.class);
+		add("/sell/orderManager", MlOrderAppController.class);
+
 
 
 
