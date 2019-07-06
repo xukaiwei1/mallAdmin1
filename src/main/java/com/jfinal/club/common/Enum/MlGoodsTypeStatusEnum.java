@@ -3,17 +3,16 @@ package com.jfinal.club.common.Enum;
 import java.util.TreeMap;
 
 /** 
- * good表任务状态枚举
+ * 商品状态枚举
  *
  * Created by wangyao6 on 2017/1/20.
  */
-public enum MlGoodsStatusEnum {
-    Selling(0, "上架", "商品上架"),
-    StopSelling(1, "下架", "商品下架"),
-    Delete(2, "删除", "商品删除");
+public enum MlGoodsTypeStatusEnum {
+    Valid(0, "有效", "有效"),
+    Invalid(1, "无效", "无效");
 
 
-    MlGoodsStatusEnum(Integer code, String name, String description) {
+    MlGoodsTypeStatusEnum(Integer code, String name, String description) {
         this.code = code;
         this.name = name;
         this.description = description;
@@ -26,7 +25,7 @@ public enum MlGoodsStatusEnum {
     /**
      * @param description 中文描述
      */
-    private MlGoodsStatusEnum(String description) {
+    private MlGoodsTypeStatusEnum(String description) {
         this.description = description;
     }
 
@@ -34,7 +33,7 @@ public enum MlGoodsStatusEnum {
      * @param code        数字编码
      * @param description 中文描述
      */
-    private MlGoodsStatusEnum(Integer code, String description) {
+    private MlGoodsTypeStatusEnum(Integer code, String description) {
         this.code = code;
         this.description = description;
     }
@@ -43,7 +42,7 @@ public enum MlGoodsStatusEnum {
      * @param name        英文编码名称
      * @param description 中文描述
      */
-    private MlGoodsStatusEnum(String name, String description) {
+    private MlGoodsTypeStatusEnum(String name, String description) {
         this.name = name;
         this.description = description;
     }
@@ -55,9 +54,9 @@ public enum MlGoodsStatusEnum {
      * @param code 数值
      * @return 枚举类型
      */
-    public static MlGoodsStatusEnum enumValueOf(Integer code) {
-        MlGoodsStatusEnum[] values = MlGoodsStatusEnum.values();
-        MlGoodsStatusEnum v = null;
+    public static MlGoodsTypeStatusEnum enumValueOf(Integer code) {
+        MlGoodsTypeStatusEnum[] values = MlGoodsTypeStatusEnum.values();
+        MlGoodsTypeStatusEnum v = null;
         for (int i = 0; i < values.length; i++) {
             if (code.equals(values[i].toCode())) {
                 v = values[i];
@@ -73,9 +72,9 @@ public enum MlGoodsStatusEnum {
      * @param name 英文编码
      * @return 枚举类型
      */
-    public static MlGoodsStatusEnum enumValueOf(String name) {
-        MlGoodsStatusEnum[] values = MlGoodsStatusEnum.values();
-        MlGoodsStatusEnum v = null;
+    public static MlGoodsTypeStatusEnum enumValueOf(String name) {
+        MlGoodsTypeStatusEnum[] values = MlGoodsTypeStatusEnum.values();
+        MlGoodsTypeStatusEnum v = null;
         for (int i = 0; i < values.length; i++) {
             if (values[i].toName().equalsIgnoreCase(name)) {
                 v = values[i];
@@ -92,8 +91,8 @@ public enum MlGoodsStatusEnum {
      */
     public static TreeMap<Integer, String> toCodeDescriptionMap() {
         TreeMap<Integer, String> map = new TreeMap<Integer, String>();
-        for (int i = 0; i < MlGoodsStatusEnum.values().length; i++) {
-            map.put(MlGoodsStatusEnum.values()[i].toCode(), MlGoodsStatusEnum.values()[i].toName());
+        for (int i = 0; i < MlGoodsTypeStatusEnum.values().length; i++) {
+            map.put(MlGoodsTypeStatusEnum.values()[i].toCode(), MlGoodsTypeStatusEnum.values()[i].toName());
         }
         return map;
     }

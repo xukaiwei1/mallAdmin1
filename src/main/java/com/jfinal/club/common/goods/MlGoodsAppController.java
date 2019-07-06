@@ -16,12 +16,19 @@ package com.jfinal.club.common.goods;
 
 import com.jfinal.aop.Before;
 import com.jfinal.aop.Inject;
+import com.jfinal.club.common.Enum.MlOrderStatusEnum;
 import com.jfinal.club.common.controller.BaseController;
+import com.jfinal.club.common.model.EnumDomain;
 import com.jfinal.club.common.model.MlGoods;
+import com.jfinal.club.common.model.MlGoodsType;
 import com.jfinal.club.index.IndexService;
 import com.jfinal.club.project.ProjectService;
+import com.jfinal.core.paragetter.Para;
 import com.jfinal.kit.Ret;
 import com.jfinal.plugin.activerecord.Page;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * 商品管理控制器
@@ -121,6 +128,7 @@ public class MlGoodsAppController extends BaseController {
 		Ret ret = srv.delete(getLoginAccount(),getParaToInt("id"));
 		renderJson(ret);
 	}
+
 }
 
 

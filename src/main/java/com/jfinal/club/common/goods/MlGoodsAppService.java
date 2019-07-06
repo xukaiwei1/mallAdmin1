@@ -16,10 +16,11 @@ package com.jfinal.club.common.goods;
 
 import com.alibaba.druid.util.StringUtils;
 import com.jfinal.club.common.Enum.MlGoodsStatusEnum;
+import com.jfinal.club.common.Enum.MlGoodsTypeKindEnum;
+import com.jfinal.club.common.Enum.MlGoodsTypeStatusEnum;
+import com.jfinal.club.common.Enum.MlOrderStatusEnum;
 import com.jfinal.club.common.kit.DruidKit;
-import com.jfinal.club.common.model.Account;
-import com.jfinal.club.common.model.MlGoods;
-import com.jfinal.club.common.model.Project;
+import com.jfinal.club.common.model.*;
 import com.jfinal.kit.Kv;
 import com.jfinal.kit.Ret;
 import com.jfinal.kit.StrKit;
@@ -38,6 +39,7 @@ public class MlGoodsAppService {
 	private MlGoods dao = new MlGoods().dao();
 	private  static final int LENGTH=8;
 	private   static final  String COLUMNS="id,goods_code,goods_type_id,goods_name,goods_introduce,orders,price,count,goods_detail,detail_picture,banner_picture,selling_time,stopping_time,goods_attribute,logistics,creator,created,modifier,modified,status,current_mall_id,remark,count_selling";
+	private   static final  String COLUMNS_BM="gd.id,gd.type_name,gd.type_code,gd.parent_type,gd.creator,gd.created,gd.modifier,gd.modified,gd.status,gd.current_mall_id,gd.remark,gd.type_kind";
     private static final int  LOGISTICS=0;
 	/**
 	 * 项目分页
@@ -251,8 +253,12 @@ public class MlGoodsAppService {
 		}
 	}
 
+
+
 	public void deleteGoods(Account account,int goodsId){
 		Db.update("update ml_goods set status = ?,modifier = ? ,modified = ? where id=?", MlGoodsStatusEnum.Delete,account.getId(),new Date(),goodsId);
 	}
+
+
 
 }

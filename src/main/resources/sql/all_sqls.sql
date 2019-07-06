@@ -41,6 +41,10 @@
 #include("mlOrder.sql")
 #end
 
+#namespace("mlGoodsType")
+#include("mlGoodsType.sql")
+#end
+
 
 
 
