@@ -16,6 +16,7 @@ package com.jfinal.club.common.goods;
 
 import com.jfinal.aop.Before;
 import com.jfinal.aop.Inject;
+import com.jfinal.club.common.Enum.MlGoodsStatusEnum;
 import com.jfinal.club.common.Enum.MlOrderStatusEnum;
 import com.jfinal.club.common.controller.BaseController;
 import com.jfinal.club.common.model.EnumDomain;
@@ -37,6 +38,18 @@ public class MlGoodsAppController extends BaseController {
 
 	@Inject
 	MlGoodsAppService srv;
+
+
+
+	/**
+	 * 商品状态
+	 */
+	//@Before(MlOrderAppValidator.class)
+	public void init() {
+		List<EnumDomain> orderStatus= MlGoodsStatusEnum.toCodeNameList();
+		renderJson(Ret.ok("msg", "查询成功").set("goodsStatus",orderStatus));
+	}
+
 
 	/**
 	 * 首页查询商品

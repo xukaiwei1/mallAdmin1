@@ -16,7 +16,11 @@ package com.jfinal.club.login;
 
 import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.fastjson.JSON;
+import com.jfinal.aop.Inject;
+import com.jfinal.club._app.order.MlOrderAppService;
 import com.jfinal.club.common.kit.HttpClientUtil;
+import com.jfinal.club.common.kit.IpKit;
+import com.jfinal.club.common.mlparams.MlparamsService;
 import com.jfinal.club.common.model.MlUser;
 import com.jfinal.kit.HashKit;
 import com.jfinal.kit.PropKit;
@@ -47,6 +51,9 @@ public class LoginService {
 	private Account accountDao = new Account().dao();
 
 	private MlUser mluserDao = new MlUser().dao();
+
+
+	MlparamsService  mlparamsService=MlparamsService.me;
 
 
 	// 存放登录用户的 cacheName
@@ -169,9 +176,24 @@ public class LoginService {
 			loginAccount.setOpenid(openid);
 			loginAccount.save();
 
-
 		}
+
+
 		String sessionId = StrKit.getRandomUUID();
+
+		// 如果用户勾选保持登录，暂定过期时间为 3 年，否则为 120 分钟，单位为秒
+		long liveSeconds =  Long.valueOf(mlparamsService.getMlparams(mallId,"keeptime").getParamvalue());
+		// expireAt 用于设置 session 的过期时间点，需要转换成毫秒
+		long expireAt = System.currentTimeMillis() + (liveSeconds * 1000);
+		// 保存登录 session 到数据库
+		Session session = new Session();
+		session.setId(sessionId);
+		session.setAccountId(loginAccount.getId());
+		session.setExpireAt(expireAt);
+		if ( ! session.save()) {
+			return Ret.fail("msg", "保存 session 到数据库失败，请联系管理员");
+		}
+
 		CacheKit.put(loginAccountCacheName, sessionId, loginAccount);
 		// 登陆历史
 		createLoginLog(loginAccount.getId(), loginIp);
@@ -181,9 +203,17 @@ public class LoginService {
 	/**
 	 * 登录成功返回 sessionId 与 loginAccount，否则返回一个 msg
 	 */
-	public Ret checkToken(String token)  {
+	public Ret checkToken(String token,String loginIp)  {
 
 		MlUser mlUser=CacheKit.get(loginAccountCacheName,token);
+		if (mlUser == null) {
+			mlUser = LoginService.me.loginMlUserWithSessionId(token,loginIp);
+		}
+		if (mlUser != null) {
+			if (!mlUser.isStatusOk()){
+				return Ret.fail();
+			}
+		}
 		// 登陆历史
 		if (mlUser!=null){
 			return Ret.ok();
@@ -230,6 +260,40 @@ public class LoginService {
 		}
 		return null;
 	}
+
+
+	/**
+	 * 通过 sessionId 获取登录用户信息
+	 * sessoin表结构：session(id, accountId, expireAt)
+	 *
+	 * 1：先从缓存里面取，如果取到则返回该值，如果没取到则从数据库里面取
+	 * 2：在数据库里面取，如果取到了，则检测是否已过期，如果过期则清除记录，
+	 *     如果没过期则先放缓存一份，然后再返回
+	 */
+	public MlUser loginMlUserWithSessionId(String sessionId, String loginIp) {
+		Session session = Session.dao.findById(sessionId);
+		if (session == null) {      // session 不存在
+			return null;
+		}
+		if (session.isExpired()) {  // session 已过期
+			session.delete();		// 被动式删除过期数据，此外还需要定时线程来主动清除过期数据
+			return null;
+		}
+
+		MlUser loginAccount = mluserDao.findById(session.getAccountId());
+		// 找到 loginAccount 并且 是正常状态 才允许登录
+		if (loginAccount != null && loginAccount.isStatusOk()) {
+			//loginAccount.removeSensitiveInfo();                                 // 移除 password 与 salt 属性值
+			loginAccount.put("sessionId", sessionId);                          // 保存一份 sessionId 到 loginAccount 备用
+			CacheKit.put(loginAccountCacheName, sessionId, loginAccount);
+
+			createLoginLog(loginAccount.getId(), loginIp);
+			return loginAccount;
+		}
+		return null;
+	}
+
+
 
 	/**
 	 * 创建登录日志

@@ -40,18 +40,23 @@ public class TokenInterceptor implements Interceptor {
 		String sessionId = c.getPara("token");
 		if (sessionId != null) {
 			loginAccount = CacheKit.get(LoginService.loginAccountCacheName, sessionId);
+			if (loginAccount == null) {
+				String loginIp = IpKit.getRealIp(c.getRequest());
+				loginAccount = LoginService.me.loginMlUserWithSessionId(sessionId, loginIp);
+			}
 			if (loginAccount != null) {
 				if (!loginAccount.isStatusOk()){
 					inv.getController().renderJson(Ret.fail("msg", "用户状态异常"));
 				}
 				// 用户登录账号
 				c.setAttr(LoginService.loginAccountCacheName, loginAccount);
+				inv.invoke();
 			}
 			else {
-				inv.getController().renderJson(Ret.fail("msg", "token失效"));
+				inv.getController().renderJson(Ret.fail("msg", "登录失效，请重新授权登录"));
 			}
 
-			inv.invoke();
+
 		}
 
 		else {

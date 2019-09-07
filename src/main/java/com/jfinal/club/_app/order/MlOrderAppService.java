@@ -119,6 +119,21 @@ public class MlOrderAppService {
 	}
 
 
+	public  String getPropertyName(int propertyId,MlGoods mlGoods){
+		String goodsAttribute=mlGoods.getGoodsAttribute();
+		String [] goodsAttributeArray=goodsAttribute.split("#");
+		String  propertyName="";
+		for (int i=0;i<goodsAttributeArray.length;i++){
+			String [] arrays=goodsAttributeArray[i].split("=");
+			if (propertyId==Integer.parseInt(arrays[0])){
+				String value=arrays[1];
+				propertyName=value.split(",")[0];
+			}
+		}
+		return propertyName;
+	}
+
+
 	/**
 	 * 判断库存
 	 * @param number
@@ -265,8 +280,12 @@ public class MlOrderAppService {
 			MlGoods mlGoods=srv.goodsDetailById(mlUser.getCurrentMallId(),goodId,null);
 			int perPrice=getPricePer(goodsJsonStrs.getInteger("propertyId"),mlGoods);
 			amountTotle+=perPrice*number;
+			String properties=getPropertyName(goodsJsonStrs.getInteger("propertyId"),mlGoods);
+			attrs.append(mlGoods.getGoodsName()).append(",").append(properties).append(",")
+					.append(goodsJsonStrs.get("number")).append("#");
+/*
 			attrs.append(String.valueOf(goodId)).append(",").append(goodsJsonStrs.getString("propertyId")).append(",")
-					.append(goodsJsonStrs.get("number")).append(",").append(String.valueOf(perPrice)).append("#");
+					.append(goodsJsonStrs.get("number")).append(",").append(String.valueOf(perPrice)).append("#");*/
 
 			// 增加分布式锁
 			String key = LockUtil.getJimKey(ML_GOODS,goodId);
@@ -314,7 +333,7 @@ public class MlOrderAppService {
 		mlOrder.setStatus(MlOrderStatusEnum.ToPay.toCode());
 		mlOrder.setFreight(Integer.parseInt(mlParams.getParamvalue()));
 		mlOrder.put("isNeedLogistics",1);
-		mlOrder.setGoodsAttribute(attrs.toString());
+		mlOrder.setGoodsAttribute(attrs.substring(0,attrs.length()-1).toString());
 		mlOrder.save();
 
 

@@ -74,7 +74,8 @@ public class LoginController extends Controller {
 	 */
 	public void checkToken() {
 		String token=getPara("token");
-		Ret ret = srv.checkToken(token);
+		String loginIp = IpKit.getRealIp(getRequest());
+		Ret ret = srv.checkToken(token,loginIp);
 		renderJson(ret);
 	}
 
