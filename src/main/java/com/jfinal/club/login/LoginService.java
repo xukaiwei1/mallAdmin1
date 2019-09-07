@@ -132,7 +132,7 @@ public class LoginService {
 		dataMap.put("js_code",code);
 		String responseJson="{\"errcode\":0,\"errmsg\":\"\",\"openid\":\"32432432\",\"session_key\":\"fwerwrwer\"}\t";
 		try {
-			 //responseJson=HttpClientUtil.httpPostRequest(url,dataMap);
+			 responseJson=HttpClientUtil.httpPostRequest(url,dataMap);
 		}
 		catch (Exception e){
 			e.printStackTrace();
