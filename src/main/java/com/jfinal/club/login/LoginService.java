@@ -130,7 +130,7 @@ public class LoginService {
 		dataMap.put("secret",secret);
 		dataMap.put("grant_type",grant_type);
 		dataMap.put("js_code",code);
-		String responseJson="{\"errcode\":0,\"errmsg\":\"\",\"openid\":\"32432432\",\"session_key\":\"fwerwrwer\"}\t";
+		String responseJson="";
 		try {
 			 responseJson=HttpClientUtil.httpPostRequest(url,dataMap);
 		}
@@ -141,7 +141,7 @@ public class LoginService {
 		Map returnMap= JSON.parseObject(responseJson,Map.class);
 		String openid;
 		String session_key;
-		if ((int)returnMap.get("errcode")==0){
+		if (returnMap.get("errcode")==null||(int)returnMap.get("errcode")==0){
 			log.info("调用登录接口成功");
 			openid=(String)returnMap.get("openid");
 			session_key=(String)returnMap.get("session_key");
