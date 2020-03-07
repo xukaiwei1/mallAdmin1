@@ -12,7 +12,7 @@ import java.util.TreeMap;
  * Created by wangyao6 on 2017/1/20.
  */
 public enum MlOrderStatusEnum {
-    ToPay(0, "待支付", "待支付"),
+    ToPay(0, "待取货", "待取货"),
     TOTransfer(1, "待发货", "待发货"),
     Delete(2, "已删除", "已删除"),
     Expire(3, "已过期", "已删除"),

@@ -40,7 +40,8 @@ public class MlGoodsAppService {
 	private  static final int LENGTH=8;
 	private   static final  String COLUMNS="id,goods_code,goods_type_id,goods_name,goods_introduce,orders,price,count,goods_detail,detail_picture,banner_picture,selling_time,stopping_time,goods_attribute,logistics,creator,created,modifier,modified,status,current_mall_id,remark,count_selling";
 	private   static final  String COLUMNS_BM="gd.id,gd.type_name,gd.type_code,gd.parent_type,gd.creator,gd.created,gd.modifier,gd.modified,gd.status,gd.current_mall_id,gd.remark,gd.type_kind";
-    private static final int  LOGISTICS=0;
+    private static final int  LOGISTICS=0;  // 0是不需要快递信息
+    private static final int  LOGISTICSIS=1;  // 0是需要快递信息
 	/**
 	 * 项目分页
 	 */
@@ -116,9 +117,12 @@ public class MlGoodsAppService {
 		}
 		mlGoods.put("detailPics",detailUrlList);
 		if((int)mlGoods.get("logistics")==LOGISTICS){
-			mlGoods.put("logistics",true);
-
+			mlGoods.put("logistics",false);
 		}
+		else if((int)mlGoods.get("logistics")==LOGISTICSIS){
+			mlGoods.put("logistics",true);
+		}
+
 		String goodsAttribute = mlGoods.getGoodsAttribute();
 		String [] properties = new String[]{};
 		List propertiesList=new ArrayList();

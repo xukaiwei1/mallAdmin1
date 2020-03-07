@@ -96,7 +96,7 @@ public class MlOrderAppService {
 		MlOrder mlOrder=new MlOrder();
 		mlOrder.setFreight(Integer.parseInt(mlParams.getParamvalue()));
 		mlOrder.put("freightY",DruidKit.changeF2Y(Integer.parseInt(mlParams.getParamvalue())));
-		mlOrder.put("isNeedLogistics",1);
+		mlOrder.put("isNeedLogistics",0);
 		mlOrder.setAmount(amountTotle);
 		mlOrder.put("amountY",DruidKit.changeF2Y(amountTotle));
 		mlOrder.put("allGoodsAndYunPrice",DruidKit.changeF2Y(amountTotle+Integer.parseInt(mlParams.getParamvalue())));
@@ -264,7 +264,7 @@ public class MlOrderAppService {
 	/**
 	 * 下单
 	 */
-	public Ret create(MlUser mlUser, String goodsJsonStr,int addressId,String remark) throws Exception{
+	public Ret 	create(MlUser mlUser, String goodsJsonStr,int addressId,String remark) throws Exception{
 
 		// 目前只是计算运费
 		// 获取运费值 目前是在数据库配置 写死的
@@ -281,11 +281,12 @@ public class MlOrderAppService {
 			int perPrice=getPricePer(goodsJsonStrs.getInteger("propertyId"),mlGoods);
 			amountTotle+=perPrice*number;
 			String properties=getPropertyName(goodsJsonStrs.getInteger("propertyId"),mlGoods);
-			attrs.append(mlGoods.getGoodsName()).append(",").append(properties).append(",")
-					.append(goodsJsonStrs.get("number")).append("#");
-/*
+			// 格式是商品名字，商品属性，个数  可爱袜子,白色,1
+			/*attrs.append(mlGoods.getGoodsName()).append(",").append(properties).append(",")
+					.append(goodsJsonStrs.get("number")).append("#");*/
+
 			attrs.append(String.valueOf(goodId)).append(",").append(goodsJsonStrs.getString("propertyId")).append(",")
-					.append(goodsJsonStrs.get("number")).append(",").append(String.valueOf(perPrice)).append("#");*/
+					.append(goodsJsonStrs.get("number")).append(",").append(String.valueOf(perPrice)).append("#");
 
 			// 增加分布式锁
 			String key = LockUtil.getJimKey(ML_GOODS,goodId);
@@ -379,8 +380,8 @@ public class MlOrderAppService {
 		mlOrder.put("amount",DruidKit.changeF2Y(mlOrder.getAmount()));
 		mlOrder.put("freight",DruidKit.changeF2Y(mlOrder.getFreight()));
 		mlOrder.put("goods",list);
-		//目前所有商品都需要快递信息
-		mlOrder.put("logistics",true);
+		//目前所有商品不都需要快递信息
+		mlOrder.put("logistics",false);
 		MlAddress mlAddress=addressSrv.getAddressById(mlOrder.getAddressId());
 		mlOrder.put("logistics",mlAddress);
 		return Ret.ok("mlOder", mlOrder);
